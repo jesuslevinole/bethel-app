@@ -1,0 +1,25 @@
+.search-input {
+  min-width: 220px;
+  position: relative;
+}
+
+.search-input-icon {
+  color: var(--color-ink-soft);
+  left: 13px;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.search-input-field {
+  border-radius: var(--radius-pill);
+  padding-left: 40px;
+}
+
+@media (max-width: 760px) {
+  .search-input {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}

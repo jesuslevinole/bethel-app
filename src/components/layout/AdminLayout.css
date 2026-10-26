@@ -1,0 +1,32 @@
+.admin-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.admin-main {
+  min-width: 0;
+}
+
+.admin-backdrop {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .admin-backdrop {
+    background: rgb(31 24 51 / 35%);
+    border: 0;
+    display: block;
+    inset: 0;
+    position: fixed;
+    z-index: 35;
+  }
+
+  .admin-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-layout.is-sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+}

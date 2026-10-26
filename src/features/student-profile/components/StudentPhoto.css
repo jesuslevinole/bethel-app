@@ -1,0 +1,35 @@
+.student-photo {
+  align-items: center;
+  aspect-ratio: 3 / 4;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  display: flex;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  justify-content: center;
+  object-fit: cover;
+  overflow: hidden;
+  width: 100%;
+}
+
+.photo-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.photo-uploader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.photo-uploader-actions .btn {
+  flex: 1;
+}
+
+.photo-uploader-input {
+  display: none;
+}

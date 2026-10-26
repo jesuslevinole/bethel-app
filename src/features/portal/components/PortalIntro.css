@@ -1,0 +1,16 @@
+.portal-intro {
+  margin-bottom: var(--space-6);
+}
+
+.portal-intro-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.portal-intro-text {
+  color: var(--color-ink-muted);
+  margin: var(--space-2) 0 0;
+}

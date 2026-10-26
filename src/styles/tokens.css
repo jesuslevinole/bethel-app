@@ -1,0 +1,50 @@
+/* Bethel Bible Institute — variables de diseño.
+   Violeta institucional profundo (heredado de la hoja de Bethel), blanco frío y un dorado
+   discreto que se usa solo en el escudo y en el indicador de la sección activa. */
+:root {
+  --color-accent: #c8a15a;
+  --color-accent-soft: #f7efdd;
+  --color-bg: #faf9fd;
+  --color-border: #e7e1f1;
+  --color-border-strong: #d4cae6;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-ink: #1f1833;
+  --color-ink-muted: #625a78;
+  --color-ink-soft: #8d859f;
+  --color-on-primary: #ffffff;
+  --color-primary: #4f3291;
+  --color-primary-hover: #422a7b;
+  --color-primary-soft: #f0ebf9;
+  --color-primary-strong: #2b1b52;
+  --color-row-hover: #fcfbff;
+  --color-success: #1d7a4e;
+  --color-success-soft: #e4f4eb;
+  --color-surface: #ffffff;
+  --color-warning: #8a5a00;
+  --color-warning-soft: #fdf3dc;
+  --focus-ring: 0 0 0 3px rgb(79 50 145 / 18%);
+  --font-display: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+  --font-ui: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --radius-sm: 8px;
+  --shadow-panel: 0 1px 2px rgb(31 24 51 / 4%), 0 10px 28px -16px rgb(43 27 82 / 16%);
+  --shadow-pop: 0 24px 56px -20px rgb(31 24 51 / 35%);
+  --sidebar-width: 268px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --text-hero: clamp(2.6rem, 1.7rem + 3.6vw, 4.5rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
+  --text-md: 0.9375rem;
+  --text-sm: 0.875rem;
+  --text-xl: clamp(1.6rem, 1.3rem + 1vw, 2rem);
+  --text-xs: 0.78rem;
+  --view-gutter: clamp(16px, 3vw, 40px);
+}
