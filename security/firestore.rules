@@ -1,0 +1,143 @@
+rules_version = '2';
+
+// Bethel Bible Institute — reglas por rol.
+// Propietario: admin_users/{uid}, puede todo. Usuario: app_users/{uid} (active, roleId, teacherId, studentId).
+// Permisos: roles/{roleId}.permissions[módulo] = { view: 'none'|'own'|'all', create, edit, delete }.
+// "Propios" = ligado al usuario por teacherId o studentId. Debe coincidir con features/roles/permissionModules.ts.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner() { return signedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)); }
+    function profilePath() { return /databases/$(database)/documents/app_users/$(request.auth.uid); }
+    function profile() { return get(profilePath()).data; }
+    function isActiveUser() { return signedIn() && exists(profilePath()) && profile().active == true; }
+    function isMember() { return isOwner() || isActiveUser(); }
+
+    function permission(module) { return get(/databases/$(database)/documents/roles/$(profile().roleId)).data.permissions[module]; }
+    function seesAll(module) { return isOwner() || (isActiveUser() && permission(module).view == 'all'); }
+    function seesOwn(module) { return !isOwner() && isActiveUser() && permission(module).view == 'own'; }
+    function hasAction(module, action) { return isOwner() || (isActiveUser() && permission(module).view != 'none' && permission(module)[action] == true); }
+
+    // El vínculo (teacherId / studentId) se lee solo en la rama de "propios": el propietario no tiene app_users.
+    function isMine(ownerId, link) { return ownerId != null && ownerId == profile()[link]; }
+
+    // Registros sin dueño (períodos, costos, catálogos, usuarios, roles): solo con "todos".
+    function canWrite(module, action) { return hasAction(module, action) && seesAll(module); }
+
+    // Registros con dueño.
+    function canRead(module, ownerId, link) { return seesAll(module) || (seesOwn(module) && isMine(ownerId, link)); }
+    function canCreate(module, link) { return hasAction(module, 'create') && (seesAll(module) || (seesOwn(module) && isMine(request.resource.data[link], link))); }
+    function canEdit(module, link) { return hasAction(module, 'edit') && (seesAll(module) || (seesOwn(module) && isMine(resource.data[link], link) && isMine(request.resource.data[link], link))); }
+    function canDelete(module, link) { return hasAction(module, 'delete') && (seesAll(module) || (seesOwn(module) && isMine(resource.data[link], link))); }
+
+    // Planillas de asistencia y notas: si aún no existe (resource == null), el maestro puede abrirla vacía.
+    function canReadSheet(module) { return seesAll(module) || (seesOwn(module) && (resource == null || isMine(resource.data.teacherId, 'teacherId'))); }
+
+    // Lista de alumnos (roster) de un registro de materias: la actualiza quien inscribe o edita alumnos,
+    // sin poder cambiar nada más del registro.
+    function onlyRosterChanged() { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['roster', 'updatedAt']); }
+    function canSyncRoster() { return hasAction('enrollments', 'create') || hasAction('enrollments', 'edit') || hasAction('enrollments', 'delete') || hasAction('students', 'edit'); }
+
+    // Alumno propio: el id del documento es el del alumno.
+    function canEditStudent(studentId) { return hasAction('students', 'edit') && (seesAll('students') || (seesOwn('students') && isMine(studentId, 'studentId'))); }
+
+    match /admin_users/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Nadie se edita ni se borra a sí mismo.
+    match /app_users/{userId} {
+      allow read: if (signedIn() && request.auth.uid == userId) || seesAll('users');
+      allow create: if canWrite('users', 'create');
+      allow update: if canWrite('users', 'edit') && request.auth.uid != userId;
+      allow delete: if canWrite('users', 'delete') && request.auth.uid != userId;
+    }
+
+    match /roles/{docId} {
+      allow read: if isMember();
+      allow create: if canWrite('roles', 'create');
+      allow update: if canWrite('roles', 'edit');
+      allow delete: if canWrite('roles', 'delete');
+    }
+
+    // Nombres que todos los miembros necesitan (asistencia, fichas, carnets, libros de cada clase).
+    match /academic_periods/{docId} {
+      allow read: if isMember();
+      allow create: if canWrite('academicPeriods', 'create');
+      allow update: if canWrite('academicPeriods', 'edit');
+      allow delete: if canWrite('academicPeriods', 'delete');
+    }
+
+    match /{catalog}/{docId} {
+      allow read: if catalog in ['classes', 'subjects', 'books', 'teachers'] && isMember();
+      allow read: if catalog in ['payment_types', 'income_types', 'banks', 'expense_categories'] && seesAll('catalogs');
+      allow read: if catalog in ['payment_types', 'income_types', 'banks'] && seesAll('payments');
+      allow create: if catalog in ['classes', 'subjects', 'books', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'create');
+      allow update: if catalog in ['classes', 'subjects', 'books', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'edit');
+      allow delete: if catalog in ['classes', 'subjects', 'books', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'delete');
+    }
+
+    // Pagos también los lee: el estado de cuenta (y el del propio estudiante) se calcula con los costos.
+    match /course_costs/{docId} {
+      allow read: if seesAll('courseCosts') || seesAll('payments') || seesOwn('payments');
+      allow create: if canWrite('courseCosts', 'create');
+      allow update: if canWrite('courseCosts', 'edit');
+      allow delete: if canWrite('courseCosts', 'delete');
+    }
+
+    match /students/{studentId} {
+      allow read: if canRead('students', studentId, 'studentId');
+      allow create: if canWrite('students', 'create');
+      allow update: if canEditStudent(studentId);
+      allow delete: if canWrite('students', 'delete');
+    }
+
+    match /student_photos/{studentId} {
+      allow read: if canRead('students', studentId, 'studentId');
+      allow write: if canEditStudent(studentId);
+    }
+
+    match /enrollments/{docId} {
+      allow read: if canRead('enrollments', resource.data.studentId, 'studentId');
+      allow create: if canCreate('enrollments', 'studentId');
+      allow update: if canEdit('enrollments', 'studentId');
+      allow delete: if canDelete('enrollments', 'studentId');
+    }
+
+    // Pagos del alumno. Con "propios" (estudiante) solo los suyos y sin poder cambiarlos (rol sin agregar/editar/eliminar).
+    match /payments/{docId} {
+      allow read: if canRead('payments', resource.data.studentId, 'studentId');
+      allow create: if canCreate('payments', 'studentId');
+      allow update: if canEdit('payments', 'studentId');
+      allow delete: if canDelete('payments', 'studentId');
+    }
+
+    // Número correlativo de invoice (counters/payments = { next }). Lo usa quien registra pagos.
+    match /counters/{counterId} {
+      allow read, write: if counterId == 'payments' && hasAction('payments', 'create');
+    }
+
+    match /teacher_assignments/{docId} {
+      allow read: if canRead('teacherAssignments', resource.data.teacherId, 'teacherId');
+      allow create: if canCreate('teacherAssignments', 'teacherId');
+      allow update: if canEdit('teacherAssignments', 'teacherId') || (onlyRosterChanged() && canSyncRoster());
+      allow delete: if canDelete('teacherAssignments', 'teacherId');
+    }
+
+    match /attendance/{docId} {
+      allow read: if canReadSheet('attendance');
+      allow create: if canCreate('attendance', 'teacherId');
+      allow update: if canEdit('attendance', 'teacherId');
+      allow delete: if canDelete('attendance', 'teacherId');
+    }
+
+    match /grades/{docId} {
+      allow read: if canReadSheet('grades');
+      allow create: if canCreate('grades', 'teacherId');
+      allow update: if canEdit('grades', 'teacherId');
+      allow delete: if canDelete('grades', 'teacherId');
+    }
+  }
+}

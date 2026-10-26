@@ -1,0 +1,37 @@
+.topbar {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: var(--space-4) var(--view-gutter) 0;
+}
+
+.topbar-period {
+  display: flex;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.topbar-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.topbar-icon-button {
+  height: 40px;
+  min-height: 40px;
+  width: 40px;
+}
+
+.topbar-icon-button.is-active {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.topbar-icon-button.is-active:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  color: var(--color-on-primary);
+}

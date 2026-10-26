@@ -1,0 +1,123 @@
+.sidebar {
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  height: 100vh;
+  left: 0;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-4);
+  position: sticky;
+  top: 0;
+  width: var(--sidebar-width);
+}
+
+.sidebar-top {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.sidebar-brand {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: var(--space-3);
+  padding: 0 var(--space-2);
+  text-decoration: none;
+}
+
+.sidebar-brand-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sidebar-brand-area {
+  color: var(--color-ink-soft);
+  display: block;
+  font-size: var(--text-xs);
+  margin-top: 2px;
+}
+
+.sidebar-close {
+  display: none;
+  margin-left: auto;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Sin títulos: una línea fina separa los grupos. */
+.sidebar-group + .sidebar-group {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}
+
+.sidebar-link {
+  align-items: center;
+  border-radius: var(--radius-md);
+  color: var(--color-ink-muted);
+  display: flex;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  gap: var(--space-3);
+  min-height: 42px;
+  padding: 0 var(--space-3);
+  position: relative;
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-link:hover {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.sidebar-link.active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  font-weight: 600;
+}
+
+.sidebar-link.active::before {
+  background: var(--color-accent);
+  border-radius: 0 3px 3px 0;
+  bottom: 10px;
+  content: '';
+  left: -16px;
+  position: absolute;
+  top: 10px;
+  width: 3px;
+}
+
+.sidebar-link.active svg {
+  color: var(--color-primary);
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    box-shadow: var(--shadow-pop);
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 220ms ease;
+    z-index: 40;
+  }
+
+  .sidebar-close {
+    display: inline-flex;
+  }
+}

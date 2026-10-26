@@ -1,0 +1,29 @@
+.crest {
+  display: block;
+  flex-shrink: 0;
+}
+
+.crest-shield {
+  fill: var(--color-primary);
+}
+
+.crest-rule {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+
+.crest-letter {
+  fill: var(--color-on-primary);
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.crest.is-inverted .crest-shield {
+  fill: var(--color-on-primary);
+}
+
+.crest.is-inverted .crest-letter {
+  fill: var(--color-primary-strong);
+}

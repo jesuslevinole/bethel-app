@@ -1,0 +1,13 @@
+.assignment-form-columns {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+}
+
+.assignment-form-subjects .chip-picker-options {
+  max-height: min(46vh, 420px);
+}
+
+.assignment-form-note {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}

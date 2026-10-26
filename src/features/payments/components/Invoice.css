@@ -1,0 +1,426 @@
+/* Invoice de un pago, formato carta. En pantalla es una hoja sobre fondo gris; al imprimir ocupa la página
+   (ver shared/components/PrintDocument.css). */
+.invoice-stage {
+  background: var(--color-bg);
+}
+
+.invoice {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin: 0 auto;
+  max-width: 820px;
+  padding: var(--space-7) var(--space-7) var(--space-6);
+  position: relative;
+}
+
+/* Franja de color arriba de la hoja. */
+.invoice::before {
+  background: linear-gradient(90deg, var(--color-primary-strong) 0 70%, var(--color-accent) 70% 100%);
+  content: '';
+  height: 8px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* ---------- Membrete ---------- */
+.invoice-header {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-5);
+  justify-content: space-between;
+}
+
+.invoice-brand {
+  align-items: center;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.invoice-logo {
+  height: 76px;
+  object-fit: contain;
+  width: 84px;
+}
+
+.invoice-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.invoice-institute {
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.invoice-line {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.invoice-title-block {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: right;
+}
+
+.invoice-title {
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.invoice-meta {
+  align-items: baseline;
+  display: grid;
+  gap: 2px var(--space-3);
+  grid-template-columns: auto auto;
+  margin: 0;
+}
+
+.invoice-meta > div {
+  display: contents;
+}
+
+.invoice-meta dt {
+  color: var(--color-ink-soft);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-align: right;
+}
+
+.invoice-meta dd {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  margin: 0;
+  text-align: right;
+}
+
+.invoice-stamp {
+  border: 2px solid var(--color-success);
+  border-radius: var(--radius-sm);
+  color: var(--color-success);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  padding: 3px 12px;
+  text-transform: uppercase;
+}
+
+/* ---------- Alumno y detalles ---------- */
+.invoice-label {
+  color: var(--color-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--space-2);
+  text-transform: uppercase;
+}
+
+.invoice-parties {
+  border-bottom: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: var(--space-5) 0;
+}
+
+.invoice-party {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.invoice-student {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.invoice-line-dark {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.invoice-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.invoice-details > div {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 120px minmax(0, 1fr);
+}
+
+.invoice-details dt {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.invoice-details dd {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ---------- Conceptos ---------- */
+.invoice-items {
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  width: 100%;
+}
+
+.invoice-items thead th {
+  background: var(--color-primary-strong);
+  color: var(--color-on-primary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 10px 12px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.invoice-items td {
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px;
+  vertical-align: top;
+}
+
+.invoice-items tbody tr:nth-child(even) td {
+  background: var(--color-bg);
+}
+
+.invoice-items .invoice-index {
+  color: var(--color-ink-soft);
+  font-variant-numeric: tabular-nums;
+  width: 40px;
+}
+
+.invoice-items thead .invoice-index {
+  color: var(--color-on-primary);
+}
+
+.invoice-concept {
+  font-weight: 600;
+}
+
+.invoice-detail {
+  color: var(--color-ink-muted);
+}
+
+.invoice-items .invoice-amount {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- Totales ---------- */
+.invoice-summary {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(var(--space-6) * -0.5);
+}
+
+.invoice-totals {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-width: 300px;
+}
+
+.invoice-totals > div {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+.invoice-totals dt {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.invoice-totals dd {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  margin: 0;
+}
+
+.invoice-totals .invoice-grand-total {
+  background: var(--color-primary-soft);
+  border-top: 2px solid var(--color-primary-strong);
+}
+
+.invoice-grand-total dt {
+  color: var(--color-primary-strong);
+  font-weight: 700;
+}
+
+.invoice-grand-total dd {
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+/* ---------- Estado de cuenta ---------- */
+.invoice-account-grid {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  overflow: hidden;
+}
+
+.invoice-account-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.invoice-account-grid > div + div {
+  border-left: 1px solid var(--color-border);
+}
+
+.invoice-account-grid dt {
+  color: var(--color-ink-soft);
+  font-size: var(--text-xs);
+}
+
+.invoice-account-grid dd {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  margin: 0;
+}
+
+.invoice-account-grid .is-pending {
+  background: var(--color-warning-soft);
+}
+
+.invoice-account-grid .is-pending dd {
+  color: var(--color-warning);
+}
+
+.invoice-account-grid .is-settled {
+  background: var(--color-success-soft);
+}
+
+.invoice-account-grid .is-settled dd {
+  color: var(--color-success);
+}
+
+/* ---------- Pie ---------- */
+.invoice-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.invoice-signatures {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.invoice-signature {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.invoice-signature-line {
+  border-bottom: 1px solid var(--color-ink);
+  height: 40px;
+}
+
+.invoice-thanks {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+  text-align: center;
+}
+
+.invoice-fine {
+  border-top: 1px solid var(--color-border);
+  color: var(--color-ink-soft);
+  font-size: var(--text-xs);
+  margin: 0;
+  padding-top: var(--space-3);
+  text-align: center;
+}
+
+@media screen and (max-width: 760px) {
+  .invoice {
+    padding: var(--space-6) var(--space-4) var(--space-5);
+  }
+
+  .invoice-header {
+    flex-direction: column;
+  }
+
+  .invoice-title-block {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .invoice-meta dt,
+  .invoice-meta dd {
+    text-align: left;
+  }
+
+  .invoice-parties,
+  .invoice-signatures {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .invoice-account-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .invoice-account-grid > div + div {
+    border-left: 0;
+  }
+
+  .invoice-totals {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media print {
+  .invoice-stage {
+    background: none;
+  }
+
+  .invoice {
+    box-shadow: none;
+    max-width: none;
+    padding: 6mm 0 0;
+  }
+}

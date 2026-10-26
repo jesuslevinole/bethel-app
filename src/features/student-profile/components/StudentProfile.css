@@ -1,0 +1,130 @@
+.student-profile {
+  align-items: start;
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.student-profile-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.back-link {
+  align-items: center;
+  color: var(--color-ink-muted);
+  display: inline-flex;
+  font-size: var(--text-sm);
+  gap: 4px;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+}
+
+/* ---------- Tarjeta del alumno ---------- */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.profile-card-code {
+  align-self: flex-start;
+  background: var(--color-primary-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-primary);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+}
+
+.profile-facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.profile-fact dt {
+  color: var(--color-ink-soft);
+  font-size: var(--text-xs);
+}
+
+.profile-fact dd {
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+/* ---------- Inscripción del período ---------- */
+.enrollment-facts {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.enrollment-fact dt {
+  color: var(--color-ink-soft);
+  font-size: var(--text-xs);
+}
+
+.enrollment-fact dd {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-weight: 700;
+  margin: 0;
+}
+
+.enrollment-missing {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.enrollment-missing p {
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+/* ---------- Materias y notas ---------- */
+.record-table td.cell-num,
+.record-table th.cell-num {
+  text-align: center;
+}
+
+.record-subject {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (max-width: 1100px) {
+  .enrollment-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .student-profile {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .profile-card .photo-uploader {
+    align-self: center;
+    width: min(200px, 100%);
+  }
+
+  .student-profile {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

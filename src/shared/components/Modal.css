@@ -1,0 +1,139 @@
+/* Tamaños:
+   - md (por defecto): formularios. Ocupa ~70% de ancho y de alto de la pantalla.
+   - full: formularios con muchas columnas (costos, materias). Casi toda la pantalla.
+   - sm: confirmaciones cortas.
+   En pantallas chicas todos se vuelven una hoja que sube desde abajo. */
+.modal-backdrop {
+  align-items: center;
+  animation: modal-fade 160ms ease-out;
+  background: rgb(31 24 51 / 42%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px;
+  position: fixed;
+  z-index: 50;
+}
+
+.modal {
+  animation: modal-rise 200ms ease-out;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  max-width: 100%;
+  min-height: min(70vh, 760px);
+  width: clamp(600px, 70vw, 1200px);
+}
+
+.modal-full {
+  width: min(1320px, 94vw);
+}
+
+.modal-sm {
+  min-height: 0;
+  width: 460px;
+}
+
+.modal > .modal-body,
+.modal-form {
+  flex: 1;
+  min-height: 0;
+}
+
+.modal-header {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.modal-subtitle {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+  margin: 4px 0 0;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-5);
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+.modal-text {
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+.modal-footer {
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  padding: var(--space-4) var(--space-6);
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (max-width: 760px) {
+  .modal,
+  .modal-full,
+  .modal-sm {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    margin-top: auto;
+    max-height: none;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .modal-backdrop {
+    align-items: stretch;
+    padding: 24px 0 0;
+  }
+
+  .modal-footer {
+    background: var(--color-surface);
+    bottom: 0;
+    position: sticky;
+  }
+
+  .modal-footer,
+  .modal-header,
+  .modal-body {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}

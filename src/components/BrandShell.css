@@ -1,0 +1,117 @@
+.brand-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.brand-panel {
+  background: var(--color-primary-strong);
+  color: var(--color-on-primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(32px, 5vw, 72px);
+  position: relative;
+}
+
+.brand-panel-watermark {
+  bottom: -0.32em;
+  color: rgb(255 255 255 / 5%);
+  font-family: var(--font-display);
+  font-size: clamp(22rem, 40vw, 44rem);
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  right: -0.08em;
+  user-select: none;
+}
+
+.brand-panel-top {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  position: relative;
+}
+
+.brand-panel-place {
+  color: rgb(255 255 255 / 70%);
+  font-size: var(--text-sm);
+}
+
+.brand-panel-body {
+  max-width: 34rem;
+  padding: var(--space-7) 0;
+  position: relative;
+}
+
+.brand-wordmark {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.brand-wordmark-sub {
+  display: block;
+  font-size: 0.48em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 0.3em;
+}
+
+.brand-rule {
+  background: var(--color-accent);
+  border: 0;
+  height: 2px;
+  margin: var(--space-5) 0;
+  width: 72px;
+}
+
+.brand-tagline {
+  color: rgb(255 255 255 / 78%);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 30ch;
+}
+
+.brand-panel-footer {
+  color: rgb(255 255 255 / 60%);
+  font-size: var(--text-sm);
+  position: relative;
+}
+
+.brand-content {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 72px);
+}
+
+.brand-content-inner {
+  max-width: 460px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .brand-panel {
+    min-height: auto;
+  }
+
+  .brand-panel-body {
+    padding: var(--space-6) 0 var(--space-4);
+  }
+
+  .brand-panel-footer {
+    display: none;
+  }
+
+  .brand-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

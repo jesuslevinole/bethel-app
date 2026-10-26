@@ -1,0 +1,13 @@
+.full-page-loader {
+  align-items: center;
+  animation: loader-breathe 1.6s ease-in-out infinite;
+  display: flex;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+@keyframes loader-breathe {
+  50% {
+    opacity: 0.5;
+  }
+}
