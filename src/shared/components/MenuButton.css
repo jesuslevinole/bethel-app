@@ -1,9 +1,0 @@
-.menu-button {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .menu-button {
-    display: inline-flex;
-  }
-}
