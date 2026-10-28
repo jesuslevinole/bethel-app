@@ -1,7 +1,7 @@
 # Bethel Bible Institute
 
 Administración del instituto: catálogos, costos del curso, materias por maestro, alumnos e inscripciones.
-React + TypeScript + Vite, Firebase (Auth + Firestore) y Cloudflare Pages.
+React + TypeScript + Vite, Firebase (Auth + Firestore) y Cloudflare Workers (archivos estáticos).
 
 ## Correr en local
 
@@ -40,17 +40,18 @@ npm run dev
 6. **Estudiantes nuevos:** entran por **Soy estudiante nuevo** (portal) o **Crea tu cuenta** (login), llenan
    **Mi solicitud** y la oficina la aprueba en **Solicitudes**. Necesita que exista el rol con id `estudiante`.
 
-## Publicar en Cloudflare Pages
+## Publicar en Cloudflare (Workers con archivos estáticos)
 
 ```bash
 npx wrangler login      # una sola vez
-npm run deploy          # construye y sube dist/ al proyecto "bethel-institute"
+npm run deploy          # construye y sube dist/ al Worker "bethel-institute"
 ```
 
-Si conectas el repo desde el panel de Cloudflare en vez de usar la CLI:
-comando de build `npm run build`, carpeta de salida `dist`.
+Si el repo está conectado desde el panel de Cloudflare (Workers → Builds):
+comando de build `npm run build` y comando de deploy `npx wrangler deploy`. `wrangler.jsonc` ya dice
+qué subir (`assets.directory: ./dist`) y que toda ruta devuelva `index.html` (SPA).
 
-Después del primer deploy, agrega el dominio de Pages (p. ej. `bethel-institute.pages.dev`)
+Después del primer deploy, agrega el dominio del Worker (p. ej. `bethel-institute.<tu-cuenta>.workers.dev`)
 en Firebase → Authentication → Settings → **Authorized domains**, o el login fallará.
 
 ## Scripts
@@ -61,6 +62,6 @@ en Firebase → Authentication → Settings → **Authorized domains**, o el log
 | `npm run build` | `tsc -b` + build de producción en `dist/` |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Revisión de tipos |
-| `npm run deploy` | Build + `wrangler pages deploy` |
+| `npm run deploy` | Build + `wrangler deploy` |
 
 Convenciones del código: ver `CLAUDE.md`. Decisiones y pendientes: `code-notes.md`.

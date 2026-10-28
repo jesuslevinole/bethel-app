@@ -175,3 +175,6 @@ Decisiones que alguien podría deshacer por error, y pendientes. Agrega al final
 - **Mi solicitud** se lee por uid (no por permisos): un rol Estudiante guardado viejo funciona igual. Necesita que el rol `estudiante` exista (Crear roles).
 - **Estado de cuenta** = del instituto (como el de AppSheet: entradas y salidas entre fechas). El de cada alumno sigue en Pagos → Estado de cuenta.
 - Pendiente: los pagos de inscripción de un alumno recién aprobado los registra la oficina en Pagos como siempre.
+
+## 10/28/2026 — Deploy en Cloudflare Workers
+- El proyecto de Cloudflare es de Workers (su build corre `npx wrangler deploy`), no de Pages. `wrangler.jsonc` pasó de `pages_build_output_dir` a `assets` con `not_found_handling: single-page-application`. Revisado con `npx wrangler deploy --dry-run` (sube dist sin script).

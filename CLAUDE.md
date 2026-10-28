@@ -160,7 +160,7 @@ src/
 ### Archivos y entorno
 - Archivos de texto en LF.
 - `npm run build` = `tsc -b && vite build`.
-- Hosting: Cloudflare Pages (`wrangler.jsonc`, salida `dist`). `npm run deploy` construye y sube. Sin `404.html`, Pages sirve `index.html` en cualquier ruta (SPA). `public/_headers` cachea `/assets/*` para siempre y nunca `index.html`.
+- Hosting: Cloudflare Workers con archivos estáticos (`wrangler.jsonc`: `assets.directory` = `dist`, `not_found_handling: single-page-application` para que cualquier ruta sirva `index.html`). El build de Cloudflare corre `npm run build` y `npx wrangler deploy`; `npm run deploy` hace lo mismo desde la CLI. No uses `pages_build_output_dir`: con él `wrangler deploy` falla ("Missing entry-point"). `public/_headers` cachea `/assets/*` para siempre y nunca `index.html`.
 
 ## Verificación al terminar
 
