@@ -1,0 +1,36 @@
+.olive-branch {
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.olive-branch-stem {
+  stroke: var(--color-gold);
+  stroke-linecap: round;
+  stroke-width: 1.4;
+}
+
+.olive-branch-leaves path {
+  fill: rgb(201 139 156 / 22%);
+  stroke: var(--color-accent);
+  stroke-width: 1.1;
+}
+
+.olive-branch-fruit ellipse {
+  fill: var(--color-gold);
+  opacity: 0.85;
+}
+
+.olive-branch.is-menu {
+  margin: auto calc(var(--space-4) * -1) 0;
+  opacity: 0.9;
+  width: calc(100% + var(--space-6));
+}
+
+.olive-branch.is-hero {
+  bottom: 6%;
+  opacity: 0.55;
+  position: absolute;
+  right: -6%;
+  width: min(62%, 560px);
+}

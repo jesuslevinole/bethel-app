@@ -160,3 +160,18 @@ Decisiones que alguien podría deshacer por error, y pendientes. Agrega al final
 - Casilla "Usuario de prueba (no necesita correo)" al crear un usuario. Si el correo queda vacío se genera uno interno `nombre.xxxx@bethel.test`: la cuenta de Auth existe igual y se puede entrar con ese correo y la contraseña temporal (se muestran al guardar). Se eligió esto frente a un perfil sin cuenta porque así el usuario de prueba puede entrar de verdad (por ejemplo desde un teléfono), no solo con "Ver como".
 - `.test` es un dominio reservado: "Olvidé mi contraseña" no le llega a nadie. Para cambiarle la contraseña, se borra y se crea otro.
 - El maestro o alumno que se crea con el usuario de prueba queda marcado `isTest`. Borrar el usuario de prueba se hace con la papelera (como cualquier usuario); su cuenta de Auth queda, igual que con los demás.
+
+## 10/23/2026 — Una materia, un maestro por período
+- En "Asignar materias" las materias que ya tienen maestro en el período salen bloqueadas con "Asignada a …"; al guardar se vuelve a revisar (antes solo se revisaba dentro de la misma clase y solo avisaba al guardar).
+- Si quedaron materias repetidas de antes, Materias por maestro muestra un aviso con la materia y los maestros. Al editar ese registro la materia sale en rojo y no deja guardar hasta quitarla.
+
+## 10/27/2026 — Libros, solicitudes, estado de cuenta, personalizar y diseño
+- **Diseño:** ciruela profunda + perla rosada + rosa empolvado (tokens.css); títulos Cormorant Garamond, texto Nunito Sans a 16 px, servidas con @fontsource (ya no Google Fonts). El sello visual es el menú lateral oscuro con la rama de olivo (`OliveBranch`, también en portal y login). Botones e inputs más altos (44–52 px) para maestros que usan poco la computadora. Inicio nuevo con accesos grandes.
+- **Seguro Social:** el formulario IBAD80 lo pide, pero NO se guarda en la app (riesgo legal y de seguridad, y no se usa). Si el distrito lo exige, va en papel en la oficina.
+- **Hechos 2:4**: el formulario en papel dice 2:47; en la app va 2:4 (el versículo correcto del bautismo en lenguas).
+- **BIB212S y BIB214S** vienen con el mismo nombre en el formulario de pedido; al segundo se le agregó el código para que no se repita. Revisar con la oficina cuál es el real.
+- **Ventas de libros**: solo desde Pagos (concepto Libros + libro). No hay "venta directa" en el inventario para que cada venta tenga su invoice.
+- **Roles guardados**: los módulos nuevos salen "Ninguno" hasta tocar **Roles → Agregar permisos** (`NewModulesBanner`, solo roles predeterminados). El propietario los ve siempre.
+- **Mi solicitud** se lee por uid (no por permisos): un rol Estudiante guardado viejo funciona igual. Necesita que el rol `estudiante` exista (Crear roles).
+- **Estado de cuenta** = del instituto (como el de AppSheet: entradas y salidas entre fechas). El de cada alumno sigue en Pagos → Estado de cuenta.
+- Pendiente: los pagos de inscripción de un alumno recién aprobado los registra la oficina en Pagos como siempre.

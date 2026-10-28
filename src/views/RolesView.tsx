@@ -16,6 +16,8 @@ import { PHONE_QUERY, useMediaQuery } from '../shared/hooks/useMediaQuery';
 import type { Role, RoleRow } from '../types/index';
 import { pluralize } from '../utils/plural';
 import '../features/roles/components/Roles.css';
+import NewModulesBanner from '../features/roles/components/NewModulesBanner';
+import { findRolesMissingModules } from '../features/roles/services/roleRecords';
 
 const RolesView = () => {
   const permissions = usePermissions();
@@ -30,6 +32,7 @@ const RolesView = () => {
   const canCreate = permissions.can('roles', 'create');
   const existingRoleIds = roles.map((role) => role.id);
   const isMissingDefaults = DEFAULT_ROLES.some((role) => !existingRoleIds.includes(role.id));
+  const hasRolesMissingModules = findRolesMissingModules(roles).length > 0;
   const canSaveEditor = editingRecord ? rowPermissions.canEdit : canCreate;
   const rows: RoleRow[] = roles.map((role) => ({
     role,
@@ -48,6 +51,7 @@ const RolesView = () => {
         )}
       </ViewHeader>
       {!isLoading && isMissingDefaults && canCreate && <SeedRolesBanner existingRoleIds={existingRoleIds} />}
+      {!isLoading && hasRolesMissingModules && rowPermissions.canEdit && <NewModulesBanner roles={roles} />}
       <section className="panel panel-body-flush">
         {isLoading && <ListSkeleton />}
         {!isLoading && isPhone && (

@@ -3,11 +3,16 @@
 // y security/firestore.rules.
 export type PermissionModule =
   | 'academicPeriods'
+  | 'accountStatement'
+  | 'admissions'
   | 'attendance'
+  | 'bookInventory'
   | 'catalogs'
   | 'courseCosts'
+  | 'customization'
   | 'dashboard'
   | 'enrollments'
+  | 'expenses'
   | 'grades'
   | 'payments'
   | 'roles'

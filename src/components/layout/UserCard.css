@@ -1,7 +1,7 @@
 .user-card {
   align-items: center;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 6%);
+  border: 1px solid var(--color-sidebar-line);
   border-radius: var(--radius-md);
   display: flex;
   gap: var(--space-3);
@@ -10,9 +10,9 @@
 
 .user-card-avatar {
   align-items: center;
-  background: var(--color-primary-strong);
+  background: var(--color-accent);
   border-radius: 50%;
-  color: var(--color-on-primary);
+  color: var(--color-sidebar);
   display: flex;
   flex-shrink: 0;
   font-size: var(--text-xs);
@@ -31,6 +31,7 @@
 }
 
 .user-card-name {
+  color: var(--color-on-primary);
   font-size: var(--text-sm);
   font-weight: 600;
   overflow: hidden;
@@ -39,9 +40,18 @@
 }
 
 .user-card-email {
-  color: var(--color-ink-soft);
+  color: var(--color-sidebar-ink);
   font-size: var(--text-xs);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.user-card .btn-icon {
+  color: var(--color-sidebar-ink);
+}
+
+.user-card .btn-icon:hover:not(:disabled) {
+  background: var(--color-sidebar-hover);
+  color: var(--color-on-primary);
 }

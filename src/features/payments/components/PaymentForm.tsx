@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react';
+import { useLiveCollection, useLiveData } from '../../../shared/data/liveCollections';
 import DateInput from '../../../shared/components/DateInput';
 import Field from '../../../shared/components/Field';
 import Modal from '../../../shared/components/Modal';
@@ -18,6 +19,8 @@ import type {
 import { listPeriodMonths } from '../../../utils/courseCost';
 import { todayIso } from '../../../utils/dateFormat';
 import { getRelationName } from '../../../utils/relations';
+import { computeBookStock } from '../../book-inventory/bookStock';
+import { usePermissions } from '../../auth/hooks/usePermissions';
 import { toPaymentData, toPaymentFormValues, validatePayment, type PaymentFormValues } from '../paymentForm';
 import { createPayment, updatePayment } from '../services/paymentRecords';
 import { buildStudentAccount } from '../studentAccount';
@@ -60,6 +63,14 @@ const PaymentForm = ({
 }: PaymentFormProps) => {
   const { setField, values } = useFormFields<PaymentFormValues>(toPaymentFormValues(payment, defaultStudentId));
   const { error, isRunning, run, setError } = useAsyncAction();
+  const permissions = usePermissions();
+  const books = useLiveData('books');
+  const canReadStock = permissions.scope('bookInventory') === 'all' || permissions.scope('payments') === 'all';
+  const { data: movements } = useLiveCollection('bookMovements', canReadStock);
+  const stockByBook = canReadStock ? computeBookStock(movements) : null;
+  const previousBookQuantities = new Map(
+    (payment?.items ?? []).filter((item) => item.bookId).map((item) => [item.bookId ?? '', item.quantity ?? 0]),
+  );
 
   const enrollment = enrollments.find((candidate) => candidate.studentId === values.studentId) ?? null;
   const cost = enrollment ? (costs.find((candidate) => candidate.classId === enrollment.classId) ?? null) : null;
@@ -70,11 +81,11 @@ const PaymentForm = ({
   const account = enrollment ? buildStudentAccount(cost, otherPayments, todayIso()) : null;
   const months = cost?.monthlyFees?.length ? cost.monthlyFees.map((fee) => fee.month) : listPeriodMonths(period);
   const selectedIncomeType = incomeTypes.find((type) => type.id === values.incomeTypeId) ?? null;
-  const catalogs = { banks, incomeTypes, paymentTypes };
+  const catalogs = { banks, books, incomeTypes, paymentTypes };
 
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const validationError = validatePayment(values, { ...catalogs, enrollment });
+    const validationError = validatePayment(values, { ...catalogs, enrollment, previousBookQuantities, stockByBook });
     if (validationError || !enrollment) {
       setError(validationError);
       return;
@@ -82,7 +93,7 @@ const PaymentForm = ({
     const paymentData = toPaymentData(values, enrollment, catalogs);
     let savedId = payment?.id ?? '';
     const savePayment = async () => {
-      if (payment) await updatePayment(payment.id, paymentData);
+      if (payment) await updatePayment(payment, paymentData);
       else savedId = (await createPayment(paymentData)).id;
     };
     if (await run(savePayment)) onSaved(savedId);
@@ -165,10 +176,12 @@ const PaymentForm = ({
             </div>
             <PaymentItemsEditor
               account={account}
+              books={books}
               items={values.items}
               months={months}
               onChange={(items) => setField('items', items)}
               paymentTypes={paymentTypes}
+              stockByBook={stockByBook}
             />
           </div>
           {error && <p className="form-alert">{error}</p>}

@@ -1,0 +1,31 @@
+.date-range-filter {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+}
+
+.date-range-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.date-range-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 180px;
+}
+
+@media (max-width: 640px) {
+  .date-range-fields {
+    width: 100%;
+  }
+
+  .date-range-field {
+    flex: 1;
+    min-width: 140px;
+  }
+}

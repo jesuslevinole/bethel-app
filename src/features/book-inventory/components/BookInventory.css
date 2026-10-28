@@ -1,0 +1,61 @@
+.inventory-stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.book-row-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.stock-pill {
+  background: var(--color-success-soft);
+  border-radius: var(--radius-pill);
+  color: var(--color-success);
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  min-width: 44px;
+  padding: 2px 10px;
+  text-align: center;
+}
+
+.stock-pill.is-low {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.stock-pill.is-empty {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.book-form-toggle {
+  align-items: center;
+  display: flex;
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+  min-height: 44px;
+}
+
+.book-form-toggle input {
+  accent-color: var(--color-primary);
+  height: 18px;
+  width: 18px;
+}
+
+.movement-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 1024px) {
+  .inventory-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

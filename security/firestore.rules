@@ -48,11 +48,31 @@ service cloud.firestore {
     }
 
     // Nadie se edita ni se borra a sí mismo.
+    // "Crear mi cuenta": el estudiante crea SU perfil, solo con el rol Estudiante y sin alumno ligado.
+    function isSelfRegistration(userId) {
+      return signedIn() && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['active', 'email', 'name', 'roleId', 'selfRegistered', 'studentId', 'teacherId', 'updatedAt'])
+        && request.resource.data.roleId == 'estudiante' && request.resource.data.active == true
+        && request.resource.data.selfRegistered == true
+        && request.resource.data.studentId == null && request.resource.data.teacherId == null;
+    }
+    // Al aprobar la admisión se liga la cuenta a su alumno nuevo (solo ese campo, y solo si no tenía).
+    function isAdmissionLink() {
+      return hasAction('admissions', 'edit') && seesAll('admissions') && resource.data.studentId == null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['studentId', 'updatedAt']);
+    }
+
     match /app_users/{userId} {
       allow read: if (signedIn() && request.auth.uid == userId) || seesAll('users');
-      allow create: if canWrite('users', 'create');
-      allow update: if canWrite('users', 'edit') && request.auth.uid != userId;
+      allow create: if canWrite('users', 'create') || isSelfRegistration(userId);
+      allow update: if (canWrite('users', 'edit') && request.auth.uid != userId) || isAdmissionLink();
       allow delete: if canWrite('users', 'delete') && request.auth.uid != userId;
+    }
+
+    // Personalización (menú y columnas): la leen todos, la cambia quien tenga "Personalizar".
+    match /app_settings/{docId} {
+      allow read: if isMember();
+      allow write: if canWrite('customization', 'edit');
     }
 
     match /roles/{docId} {
@@ -70,13 +90,22 @@ service cloud.firestore {
       allow delete: if canWrite('academicPeriods', 'delete');
     }
 
+    // Libros: también los cambia el Inventario de libros (código y precio).
+    match /books/{docId} {
+      allow read: if isMember();
+      allow create: if canWrite('catalogs', 'create') || canWrite('bookInventory', 'create');
+      allow update: if canWrite('catalogs', 'edit') || canWrite('bookInventory', 'edit');
+      allow delete: if canWrite('catalogs', 'delete') || canWrite('bookInventory', 'delete');
+    }
+
     match /{catalog}/{docId} {
-      allow read: if catalog in ['classes', 'subjects', 'books', 'teachers'] && isMember();
+      allow read: if catalog in ['classes', 'subjects', 'teachers'] && isMember();
       allow read: if catalog in ['payment_types', 'income_types', 'banks', 'expense_categories'] && seesAll('catalogs');
       allow read: if catalog in ['payment_types', 'income_types', 'banks'] && seesAll('payments');
-      allow create: if catalog in ['classes', 'subjects', 'books', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'create');
-      allow update: if catalog in ['classes', 'subjects', 'books', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'edit');
-      allow delete: if catalog in ['classes', 'subjects', 'books', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'delete');
+      allow read: if catalog in ['income_types', 'banks', 'expense_categories'] && seesAll('expenses');
+      allow create: if catalog in ['classes', 'subjects', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'create');
+      allow update: if catalog in ['classes', 'subjects', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'edit');
+      allow delete: if catalog in ['classes', 'subjects', 'teachers', 'payment_types', 'income_types', 'banks', 'expense_categories'] && canWrite('catalogs', 'delete');
     }
 
     // Pagos también los lee: el estado de cuenta (y el del propio estudiante) se calcula con los costos.
@@ -88,7 +117,7 @@ service cloud.firestore {
     }
 
     match /students/{studentId} {
-      allow read: if canRead('students', studentId, 'studentId');
+      allow read: if canRead('students', studentId, 'studentId') || seesAll('admissions');
       allow create: if canWrite('students', 'create');
       allow update: if canEditStudent(studentId);
       allow delete: if canWrite('students', 'delete');
@@ -108,7 +137,7 @@ service cloud.firestore {
 
     // Pagos del alumno. Con "propios" (estudiante) solo los suyos y sin poder cambiarlos (rol sin agregar/editar/eliminar).
     match /payments/{docId} {
-      allow read: if canRead('payments', resource.data.studentId, 'studentId');
+      allow read: if canRead('payments', resource.data.studentId, 'studentId') || seesAll('accountStatement');
       allow create: if canCreate('payments', 'studentId');
       allow update: if canEdit('payments', 'studentId');
       allow delete: if canDelete('payments', 'studentId');
@@ -117,6 +146,46 @@ service cloud.firestore {
     // Número correlativo de invoice (counters/payments = { next }). Lo usa quien registra pagos.
     match /counters/{counterId} {
       allow read, write: if counterId == 'payments' && hasAction('payments', 'create');
+    }
+
+    // Inventario de libros. Las ventas (kind 'sale') las escribe Pagos junto con el pago.
+    function isSale(data) { return data.kind == 'sale'; }
+    match /book_movements/{docId} {
+      allow read: if seesAll('bookInventory') || seesAll('payments');
+      allow create: if (canWrite('bookInventory', 'create') && !isSale(request.resource.data))
+        || (isSale(request.resource.data) && (hasAction('payments', 'create') || hasAction('payments', 'edit')));
+      allow update: if (canWrite('bookInventory', 'edit') && !isSale(resource.data) && !isSale(request.resource.data))
+        || (isSale(resource.data) && isSale(request.resource.data) && hasAction('payments', 'edit'));
+      allow delete: if (canWrite('bookInventory', 'delete') && !isSale(resource.data))
+        || (isSale(resource.data) && (hasAction('payments', 'edit') || hasAction('payments', 'delete')));
+    }
+
+    // Gastos del instituto. El Estado de cuenta también los lee.
+    match /expenses/{docId} {
+      allow read: if seesAll('expenses') || seesAll('accountStatement');
+      allow create: if canWrite('expenses', 'create');
+      allow update: if canWrite('expenses', 'edit');
+      allow delete: if canWrite('expenses', 'delete');
+    }
+
+    // Solicitud de admisión: admission_applications/{uid}. El estudiante la crea y la corrige mientras
+    // está pendiente o rechazada (al reenviarla vuelve a pendiente); la oficina la revisa y aprueba.
+    function isApplicant(userId) { return signedIn() && request.auth.uid == userId; }
+    match /admission_applications/{userId} {
+      allow read: if isApplicant(userId) || seesAll('admissions');
+      allow create: if (isApplicant(userId) && request.resource.data.status == 'pending') || canWrite('admissions', 'create');
+      allow update: if (isApplicant(userId) && resource.data.status in ['pending', 'rejected'] && request.resource.data.status == 'pending')
+        || canWrite('admissions', 'edit');
+      allow delete: if canWrite('admissions', 'delete');
+    }
+
+    // Solicitud de inscripción: la hace el alumno ligado a la cuenta; la oficina la aprueba (crea la inscripción).
+    function isOwnStudent(studentId) { return isActiveUser() && studentId != null && studentId == profile().studentId; }
+    match /enrollment_requests/{docId} {
+      allow read: if seesAll('admissions') || isOwnStudent(resource.data.studentId);
+      allow create: if isOwnStudent(request.resource.data.studentId) && request.resource.data.status == 'pending';
+      allow update: if canWrite('admissions', 'edit');
+      allow delete: if canWrite('admissions', 'delete') || (isOwnStudent(resource.data.studentId) && resource.data.status == 'pending');
     }
 
     match /teacher_assignments/{docId} {

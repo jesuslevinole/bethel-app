@@ -34,6 +34,11 @@ npm run dev
       se registra solo como maestro o alumno (si ya existe con ese nombre, se usa ese registro).
       Cada quien entra desde el portal y ve solo lo que su rol permite.
    6. Si inscribiste alumnos antes de esta versión: **Materias por maestro → Actualizar listas de alumnos**.
+   7. Si los roles ya existían antes de los módulos nuevos (Solicitudes, Inventario de libros, Gastos, Estado de cuenta,
+      Personalizar): **Roles → Agregar permisos**.
+   8. **Inventario de libros → Cargar libros** (los 32 libros del formulario de pedido con código y precio).
+6. **Estudiantes nuevos:** entran por **Soy estudiante nuevo** (portal) o **Crea tu cuenta** (login), llenan
+   **Mi solicitud** y la oficina la aprueba en **Solicitudes**. Necesita que exista el rol con id `estudiante`.
 
 ## Publicar en Cloudflare Pages
 

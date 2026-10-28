@@ -64,6 +64,9 @@ const LoginForm = () => {
           Olvidé mi contraseña
         </button>
       </div>
+      <p className="login-register">
+        ¿Eres estudiante nuevo? <Link to={PATHS.register}>Crea tu cuenta y llena tu solicitud</Link>
+      </p>
     </form>
   );
 };

@@ -1,10 +1,23 @@
 export type { AcademicPeriod, AcademicSemester } from './academicPeriods';
+export type {
+  AdmissionApplication,
+  ApplicationStatus,
+  BirthGender,
+  MaritalStatus,
+  PostalAddress,
+  PreviousInstitute,
+  SchoolRecord,
+  YesNo,
+} from './admissionApplications';
+export type { AppSettings, NavGroup } from './appSettings';
+export type { DateRange } from './dateRange';
 export type { AccessIssue, AdminUser, AppSession, SessionStatus } from './adminUsers';
 export type { AppUser } from './appUsers';
 export type { AssignmentRow } from './assignmentRow';
 export type { AttendanceMark, AttendanceSheet, SessionDraft } from './attendance';
 export type { Bank } from './banks';
 export type { Book } from './books';
+export type { BookMovement, BookMovementKind, BookOutReason, BookStock } from './bookMovements';
 export type { CatalogItem } from './catalogItem';
 export type {
   CatalogExtraField,
@@ -17,6 +30,8 @@ export type { SchoolClass } from './classes';
 export type { CourseBook, CourseBookRow, CourseCost, MonthlyFee } from './courseCosts';
 export type { EnrollmentRow } from './enrollmentRow';
 export type { Enrollment } from './enrollments';
+export type { EnrollmentRequest, EnrollmentRequestStatus } from './enrollmentRequests';
+export type { Expense } from './expenses';
 export type { AppNotification } from './notifications';
 export type { ChargeKind, MonthStatus, Payment, PaymentItem, StudentAccount } from './payments';
 export type { ExpenseCategory } from './expenseCategories';

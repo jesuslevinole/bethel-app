@@ -9,10 +9,12 @@ import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import { useFormFields } from '../../../shared/hooks/useFormFields';
 import type { AcademicPeriod, SchoolClass, Subject, Teacher, TeacherAssignment } from '../../../types/index';
 import { getSemesterLabel } from '../../../utils/classDays';
+import { getRelationName } from '../../../utils/relations';
 import { useTeacherOptions } from '../hooks/useTeacherOptions';
 import { resolveTeacherId, saveAssignment } from '../services/assignmentRecords';
 import {
   getClassSubjects,
+  getTakenSubjects,
   toAssignmentFormValues,
   validateAssignment,
   type AssignmentFormValues,
@@ -52,6 +54,7 @@ const AssignmentForm = ({
   const { error, isRunning, run, setError } = useAsyncAction();
   const { options: teacherOptions, users } = useTeacherOptions(teachers);
   const classSubjects = getClassSubjects(subjects, values.classId, values.subjectIds);
+  const takenSubjects = getTakenSubjects(periodAssignments, assignment?.id);
 
   // Al cambiar de clase se quitan las materias elegidas que son de otra clase.
   const handleClassChange = (classId: string) => {
@@ -117,7 +120,8 @@ const AssignmentForm = ({
               </Field>
               <p className="assignment-form-note">
                 Un solo registro por maestro y clase, con todas las materias que dará en el período. Puede ser un
-                maestro, un director o alguien de administración; un alumno no puede ser maestro.
+                maestro, un director o alguien de administración; un alumno no puede ser maestro. Cada materia la da un
+                solo maestro por período: las que ya tienen maestro salen bloqueadas.
               </p>
             </div>
             <div className="assignment-form-subjects form-column">
@@ -126,11 +130,17 @@ const AssignmentForm = ({
                 emptyText={getSubjectsEmptyText(values.classId, classSubjects.length)}
                 itemNamePlural="materias"
                 onChange={(subjectIds) => setField('subjectIds', subjectIds)}
-                options={classSubjects.map((subject) => ({
-                  detail: getSemesterLabel(subject.semester),
-                  label: subject.name,
-                  value: subject.id,
-                }))}
+                options={classSubjects.map((subject) => {
+                  const takenBy = takenSubjects.get(subject.id);
+                  return {
+                    detail: takenBy
+                      ? `Asignada a ${getRelationName(teacherNames, takenBy)}`
+                      : getSemesterLabel(subject.semester),
+                    disabled: Boolean(takenBy),
+                    label: subject.name,
+                    value: subject.id,
+                  };
+                })}
                 searchPlaceholder="Buscar materia"
                 selectedValues={values.subjectIds}
               />

@@ -15,6 +15,12 @@ export const useNotifications = () => {
   const { data: subjects } = useLiveCollection('subjects');
   const { data: teachers } = useLiveCollection('teachers');
   const { data: roles } = useLiveCollection('roles');
+  const seesAdmissions = permissions.scope('admissions') === 'all';
+  const seesBooks = permissions.scope('bookInventory') === 'all';
+  const { data: applications } = useLiveCollection('admissionApplications', seesAdmissions);
+  const { data: enrollmentRequests } = useLiveCollection('enrollmentRequests', seesAdmissions);
+  const { data: books } = useLiveCollection('books', seesBooks);
+  const { data: bookMovements } = useLiveCollection('bookMovements', seesBooks);
   const courseCosts = useScopedPeriodData('courseCosts', periodId);
   const enrollments = useScopedPeriodData('enrollments', periodId);
   const assignments = useScopedPeriodData('teacherAssignments', periodId);
@@ -22,7 +28,11 @@ export const useNotifications = () => {
   return useMemo(
     () =>
       buildNotifications({
+        applications,
         assignments,
+        bookMovements,
+        books,
+        enrollmentRequests,
         classes,
         courseCosts,
         enrollments,
@@ -33,6 +43,21 @@ export const useNotifications = () => {
         subjects,
         teachers,
       }),
-    [assignments, classes, courseCosts, enrollments, periods, permissions, roles, selectedPeriod, subjects, teachers],
+    [
+      applications,
+      assignments,
+      bookMovements,
+      books,
+      classes,
+      courseCosts,
+      enrollmentRequests,
+      enrollments,
+      periods,
+      permissions,
+      roles,
+      selectedPeriod,
+      subjects,
+      teachers,
+    ],
   );
 };

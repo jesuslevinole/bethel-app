@@ -22,6 +22,7 @@ import { isSameDraft, keepRosterOnly, toSessionDraft } from '../sessionDrafts';
 import MarkPicker from './MarkPicker';
 import SaveState from './SaveState';
 import ScoreCell from './ScoreCell';
+import { useColumnLabels } from '../../customization/useColumnLabels';
 
 interface DailySessionEditorProps {
   group: TeachingGroup;
@@ -34,6 +35,7 @@ interface DailySessionEditorProps {
 // y solo entre los días de clase (INSTITUTE.classWeekday) del primero al último del período.
 // Los cambios se guardan por fecha en "edits": si pasas a otro día sin guardar, no se pierden.
 const DailySessionEditor = ({ group, period, sessions, students }: DailySessionEditorProps) => {
+  const columnLabel = useColumnLabels('dailySession');
   const permissions = usePermissions();
   const classDates = listClassDates(period).map((classDate) => classDate.date);
   // Solo los días de clase del período (miércoles dentro de los semestres).
@@ -77,7 +79,10 @@ const DailySessionEditor = ({ group, period, sessions, students }: DailySessionE
   );
 
   // El promedio usa lo guardado y, para el día abierto, lo que se está escribiendo.
-  const sessionsWithDraft = [...sessions.filter((session) => session.date !== date), { dailyScores: draft.dailyScores }];
+  const sessionsWithDraft = [
+    ...sessions.filter((session) => session.date !== date),
+    { dailyScores: draft.dailyScores },
+  ];
 
   const moveToDate = (nextDate: string) => {
     setDate(nextDate);
@@ -101,7 +106,10 @@ const DailySessionEditor = ({ group, period, sessions, students }: DailySessionE
   }
 
   const updateDraft = (change: (current: SessionDraft) => SessionDraft) => {
-    setEdits((currentEdits) => ({ ...currentEdits, [date]: change(currentEdits[date] ?? toSessionDraft(savedSession)) }));
+    setEdits((currentEdits) => ({
+      ...currentEdits,
+      [date]: change(currentEdits[date] ?? toSessionDraft(savedSession)),
+    }));
     setWasSaved(false);
   };
 
@@ -178,7 +186,12 @@ const DailySessionEditor = ({ group, period, sessions, students }: DailySessionE
           </p>
         </div>
         <div className="day-session-actions">
-          <SaveState canSave={canSaveSomething} isDirty={dirtyDates.length > 0} message={dirtyText} wasSaved={wasSaved} />
+          <SaveState
+            canSave={canSaveSomething}
+            isDirty={dirtyDates.length > 0}
+            message={dirtyText}
+            wasSaved={wasSaved}
+          />
           {canSaveSomething && (
             <button
               className="btn btn-primary"
@@ -209,15 +222,15 @@ const DailySessionEditor = ({ group, period, sessions, students }: DailySessionE
           <thead>
             <tr>
               <th className="day-number-head" scope="col">
-                #
+                {columnLabel('number')}
               </th>
-              <th scope="col">Alumno</th>
-              <th scope="col">Asistencia</th>
+              <th scope="col">{columnLabel('student')}</th>
+              <th scope="col">{columnLabel('attendance')}</th>
               <th className="day-score-head" scope="col">
-                Nota del día
+                {columnLabel('dailyScore')}
               </th>
               <th className="day-average-head" scope="col">
-                Promedio ND
+                {columnLabel('average')}
               </th>
             </tr>
           </thead>
@@ -259,8 +272,8 @@ const DailySessionEditor = ({ group, period, sessions, students }: DailySessionE
         </table>
       </div>
       <p className="sheet-legend">
-        Las clases son los {INSTITUTE.classWeekdayName}: las flechas pasan de una clase a otra y el calendario solo
-        deja elegir esos días. Para ver todas las fechas o imprimir, usa "Hoja completa".
+        Las clases son los {INSTITUTE.classWeekdayName}: las flechas pasan de una clase a otra y el calendario solo deja
+        elegir esos días. Para ver todas las fechas o imprimir, usa "Hoja completa".
       </p>
     </section>
   );

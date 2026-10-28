@@ -4,6 +4,7 @@ import {
   query,
   where,
   type Query,
+  type QueryConstraint,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { useCallback, useSyncExternalStore } from 'react';
@@ -12,11 +13,15 @@ import { COLLECTIONS, type CollectionName } from '../../lib/firebase/collections
 import { typedConverter } from '../../lib/firebase/typedConverter';
 import type {
   AcademicPeriod,
+  AdmissionApplication,
   AppUser,
   Bank,
   Book,
+  BookMovement,
   CourseCost,
   Enrollment,
+  EnrollmentRequest,
+  Expense,
   ExpenseCategory,
   IncomeType,
   Payment,
@@ -43,14 +48,19 @@ import {
 //  - PERIOD_SOURCES: colecciones que crecen cada año; se escuchan SOLO del período elegido
 //    (where periodId ==), nunca completas. Con un rol de "propios" se agrega el filtro del dueño
 //    (studentId / teacherId): sin él, las reglas de Firestore rechazan la consulta.
+//  - RANGE_SOURCES: dinero que entra y sale (pagos y gastos) entre dos fechas (Estado de cuenta, Gastos).
+//  - useLiveFilteredCollection: una colección de SOURCES filtrada por un campo (lo propio de un estudiante).
 // Las vistas no llaman esto directo para colecciones con permisos: usan shared/data/useScopedData.ts.
 
 interface LiveCollectionTypes {
   academicPeriods: AcademicPeriod;
+  admissionApplications: AdmissionApplication;
   appUsers: AppUser;
   banks: Bank;
+  bookMovements: BookMovement;
   books: Book;
   classes: SchoolClass;
+  enrollmentRequests: EnrollmentRequest;
   expenseCategories: ExpenseCategory;
   incomeTypes: IncomeType;
   paymentTypes: PaymentType;
@@ -67,8 +77,14 @@ interface PeriodCollectionTypes {
   teacherAssignments: TeacherAssignment;
 }
 
+interface RangeCollectionTypes {
+  expenses: Expense;
+  payments: Payment;
+}
+
 export type LiveCollectionKey = keyof LiveCollectionTypes;
 export type PeriodCollectionKey = keyof PeriodCollectionTypes;
+export type RangeCollectionKey = keyof RangeCollectionTypes;
 
 interface SourceConfig<T> {
   collectionName: CollectionName;
@@ -77,10 +93,13 @@ interface SourceConfig<T> {
 
 const SOURCES: { [Key in LiveCollectionKey]: SourceConfig<LiveCollectionTypes[Key]> } = {
   academicPeriods: { collectionName: COLLECTIONS.academicPeriods, compare: compareByStartDateDesc },
+  admissionApplications: { collectionName: COLLECTIONS.admissionApplications, compare: compareByDateDesc },
   appUsers: { collectionName: COLLECTIONS.appUsers, compare: compareByName },
   banks: { collectionName: COLLECTIONS.banks, compare: compareByName },
+  bookMovements: { collectionName: COLLECTIONS.bookMovements, compare: compareByDateDesc },
   books: { collectionName: COLLECTIONS.books, compare: compareByName },
   classes: { collectionName: COLLECTIONS.classes, compare: compareByOrder },
+  enrollmentRequests: { collectionName: COLLECTIONS.enrollmentRequests, compare: compareByDateDesc },
   expenseCategories: { collectionName: COLLECTIONS.expenseCategories, compare: compareByName },
   incomeTypes: { collectionName: COLLECTIONS.incomeTypes, compare: compareByName },
   paymentTypes: { collectionName: COLLECTIONS.paymentTypes, compare: compareByName },
@@ -95,6 +114,11 @@ const PERIOD_SOURCES: { [Key in PeriodCollectionKey]: SourceConfig<PeriodCollect
   enrollments: { collectionName: COLLECTIONS.enrollments, compare: compareByDateDesc },
   payments: { collectionName: COLLECTIONS.payments, compare: compareByPaymentDesc },
   teacherAssignments: { collectionName: COLLECTIONS.teacherAssignments, compare: compareByDateDesc },
+};
+
+const RANGE_SOURCES: { [Key in RangeCollectionKey]: SourceConfig<RangeCollectionTypes[Key]> } = {
+  expenses: { collectionName: COLLECTIONS.expenses, compare: compareByDateDesc },
+  payments: { collectionName: COLLECTIONS.payments, compare: compareByPaymentDesc },
 };
 
 const KEEP_ALIVE_MS = 15 * 60_000;
@@ -196,6 +220,24 @@ const getPeriodEntry = <Key extends PeriodCollectionKey>(key: Key, periodId: str
   });
 };
 
+const getRangeEntry = <Key extends RangeCollectionKey>(key: Key, startDate: string, endDate: string) => {
+  const { collectionName, compare } = RANGE_SOURCES[key];
+  return getEntry(`${key}|${startDate}..${endDate}`, (entry) => {
+    const typedCollection = collection(db, collectionName).withConverter(typedConverter<RangeCollectionTypes[Key]>());
+    const constraints = [where('date', '>=', startDate), where('date', '<=', endDate)];
+    return createStarter(query(typedCollection, ...constraints), compare, `${collectionName} (${startDate}..${endDate})`)(entry);
+  });
+};
+
+const getFilteredEntry = <Key extends LiveCollectionKey>(key: Key, field: string, value: string) => {
+  const { collectionName, compare } = SOURCES[key];
+  return getEntry(`${key}|${field}=${value}`, (entry) => {
+    const typedCollection = collection(db, collectionName).withConverter(typedConverter<LiveCollectionTypes[Key]>());
+    const constraints: QueryConstraint[] = [where(field, '==', value)];
+    return createStarter(query(typedCollection, ...constraints), compare, `${collectionName} (${field}=${value})`)(entry);
+  });
+};
+
 // enabled = false no abre el listener (el rol no puede leer esa colección) y devuelve una lista vacía.
 export const useLiveCollection = <Key extends LiveCollectionKey>(key: Key, enabled = true) => {
   const subscribe = useCallback(
@@ -234,6 +276,45 @@ export const useLivePeriodCollection = <Key extends PeriodCollectionKey>(
     const filter = ownerField && ownerValue ? { field: ownerField, value: ownerValue } : null;
     return getPeriodEntry(key, periodId, filter).state as LiveCollectionState<PeriodCollectionTypes[Key]>;
   }, [key, ownerField, ownerValue, periodId]);
+  return useSyncExternalStore(subscribe, getSnapshot);
+};
+
+// Pagos o gastos con fecha entre startDate y endDate (AAAA-MM-DD, ambos incluidos).
+// Sin fechas (o enabled = false) devuelve una lista vacía.
+export const useLiveRangeCollection = <Key extends RangeCollectionKey>(
+  key: Key,
+  startDate: string,
+  endDate: string,
+  enabled = true,
+) => {
+  const isActive = enabled && Boolean(startDate) && Boolean(endDate) && startDate <= endDate;
+  const subscribe = useCallback(
+    (onChange: () => void) =>
+      isActive ? subscribeToEntry(getRangeEntry(key, startDate, endDate), onChange) : () => undefined,
+    [endDate, isActive, key, startDate],
+  );
+  const getSnapshot = useCallback(
+    () =>
+      (isActive ? getRangeEntry(key, startDate, endDate).state : EMPTY_STATE) as LiveCollectionState<
+        RangeCollectionTypes[Key]
+      >,
+    [endDate, isActive, key, startDate],
+  );
+  return useSyncExternalStore(subscribe, getSnapshot);
+};
+
+// Documentos de una colección de SOURCES con field == value (p. ej. las solicitudes de inscripción de un alumno).
+// Sin valor devuelve una lista vacía.
+export const useLiveFilteredCollection = <Key extends LiveCollectionKey>(key: Key, field: string, value: string | null) => {
+  const subscribe = useCallback(
+    (onChange: () => void) => (value ? subscribeToEntry(getFilteredEntry(key, field, value), onChange) : () => undefined),
+    [field, key, value],
+  );
+  const getSnapshot = useCallback(
+    () =>
+      (value ? getFilteredEntry(key, field, value).state : EMPTY_STATE) as LiveCollectionState<LiveCollectionTypes[Key]>,
+    [field, key, value],
+  );
   return useSyncExternalStore(subscribe, getSnapshot);
 };
 

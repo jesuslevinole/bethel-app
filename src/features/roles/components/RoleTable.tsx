@@ -1,6 +1,7 @@
 import type { Role, RoleRow, RowPermissions } from '../../../types/index';
 import { inferRoleKind, ROLE_KIND_LABELS } from '../defaultRoles';
 import { PERMISSION_MODULES } from '../permissionModules';
+import { useColumnLabels } from '../../customization/useColumnLabels';
 
 interface RoleTableProps {
   onDelete: (role: Role) => void;
@@ -10,6 +11,7 @@ interface RoleTableProps {
 }
 
 const RoleTable = ({ onDelete, onOpen, rowPermissions, rows }: RoleTableProps) => {
+  const columnLabel = useColumnLabels('roles');
   const openLabel = rowPermissions.canEdit ? 'Editar' : 'Ver';
 
   return (
@@ -17,12 +19,16 @@ const RoleTable = ({ onDelete, onOpen, rowPermissions, rows }: RoleTableProps) =
       <table className="role-table table">
         <thead>
           <tr>
-            <th scope="col">Acciones</th>
-            <th scope="col">Rol</th>
-            <th scope="col">Descripción</th>
-            <th scope="col">Tipo</th>
-            <th className="cell-num" scope="col">Módulos visibles</th>
-            <th className="cell-num" scope="col">Usuarios</th>
+            <th scope="col">{columnLabel('actions')}</th>
+            <th scope="col">{columnLabel('name')}</th>
+            <th scope="col">{columnLabel('description')}</th>
+            <th scope="col">{columnLabel('kind')}</th>
+            <th className="cell-num" scope="col">
+              {columnLabel('modules')}
+            </th>
+            <th className="cell-num" scope="col">
+              {columnLabel('users')}
+            </th>
           </tr>
         </thead>
         <tbody>

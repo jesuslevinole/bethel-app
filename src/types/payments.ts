@@ -2,12 +2,15 @@
 // si después se renombra un tipo de pago en Catálogos, y el estudiante lo ve sin leer los catálogos.
 export interface PaymentItem {
   amount: number;
+  // Libro vendido (conceptos de tipo Libros): sale del inventario. quantity = cuántos.
+  bookId?: string;
   // Detalle libre ("Libro 2", "Anuario"…). En mensualidades se arma solo con el mes.
   description: string;
   // Mes que paga (AAAA-MM), solo en mensualidades; '' en los demás.
   month: string;
   paymentTypeId: string;
   paymentTypeName: string;
+  quantity?: number;
 }
 
 // Un pago = un invoice: alumno, clase y período, cómo pagó y uno o varios conceptos.

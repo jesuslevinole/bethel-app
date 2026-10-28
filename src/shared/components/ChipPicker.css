@@ -24,6 +24,11 @@
   font-size: var(--text-xs);
 }
 
+.chip-picker-conflict {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
 .chip-remove {
   align-items: center;
   background: transparent;
@@ -72,6 +77,15 @@
 
 .chip-picker-option:hover {
   background: var(--color-primary-soft);
+}
+
+.chip-picker-option.is-disabled {
+  color: var(--color-ink-soft);
+  cursor: not-allowed;
+}
+
+.chip-picker-option.is-disabled:hover {
+  background: transparent;
 }
 
 .chip-picker-option-label {

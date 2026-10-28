@@ -1,0 +1,556 @@
+/* ---------- Formulario del estudiante ---------- */
+.application-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin: 0 auto;
+  max-width: 880px;
+  width: 100%;
+}
+
+.application-steps {
+  counter-reset: step;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.application-steps-item {
+  align-items: center;
+  color: var(--color-ink-soft);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+  position: relative;
+  text-align: center;
+}
+
+.application-steps-item::after {
+  background: var(--color-border);
+  content: '';
+  height: 2px;
+  left: calc(50% + 22px);
+  position: absolute;
+  right: calc(-50% + 22px);
+  top: 17px;
+}
+
+.application-steps-item:last-child::after {
+  display: none;
+}
+
+.application-steps-number {
+  align-items: center;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-strong);
+  border-radius: 50%;
+  display: inline-flex;
+  font-weight: 700;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.application-steps-item.is-current {
+  color: var(--color-primary-strong);
+  font-weight: 700;
+}
+
+.application-steps-item.is-current .application-steps-number {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.application-steps-item.is-done .application-steps-number {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+}
+
+.application-steps-item.is-done::after {
+  background: var(--color-accent);
+}
+
+.application-step-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  margin: 0;
+}
+
+.application-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.application-subsection {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.application-note {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+.address-fields {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 0.6fr) minmax(0, 0.8fr);
+}
+
+.address-street {
+  grid-column: 1 / -1;
+}
+
+.school-fields {
+  align-items: end;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.choice-field .filter-chips {
+  margin-top: var(--space-1);
+}
+
+.application-fees {
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.application-fees-title {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.application-fees ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.application-fees strong {
+  margin-left: var(--space-2);
+}
+
+.application-certify {
+  align-items: flex-start;
+  display: flex;
+  font-weight: 600;
+  gap: var(--space-3);
+}
+
+.application-certify input {
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+  height: 22px;
+  margin-top: 1px;
+  width: 22px;
+}
+
+.application-wizard-footer {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  padding-top: var(--space-4);
+}
+
+/* ---------- Resumen (lectura) ---------- */
+.application-summary {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.application-summary-title {
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-2);
+  padding-bottom: var(--space-1);
+}
+
+.application-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.application-summary-list > div {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1.4fr);
+}
+
+.application-summary-list dt {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.application-summary-list dd {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ---------- Estado de la solicitud ---------- */
+.application-status {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.application-status p {
+  color: var(--color-ink-muted);
+  margin: var(--space-1) 0 var(--space-3);
+  max-width: 64ch;
+}
+
+.application-status-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  margin: 0;
+}
+
+.application-status-icon {
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.application-sent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.application-status.is-pending .application-status-icon {
+  color: var(--color-warning);
+}
+
+.application-status.is-approved {
+  background: linear-gradient(120deg, var(--color-success-soft), var(--color-surface) 60%);
+}
+
+.application-status.is-approved .application-status-icon {
+  color: var(--color-success);
+}
+
+.application-status.is-rejected .application-status-icon {
+  color: var(--color-danger);
+}
+
+.application-status-note {
+  background: var(--color-danger-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ---------- Inscripción del estudiante ---------- */
+.enrollment-request-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.request-form {
+  align-items: end;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 320px) auto;
+}
+
+.request-status {
+  align-items: center;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 600;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+}
+
+.request-status.is-done {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.request-status.is-pending {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.request-history {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: var(--space-3) 0 0;
+}
+
+.request-history li {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.request-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+/* ---------- Revisión de la oficina ---------- */
+.application-review {
+  align-items: start;
+  background: var(--color-bg);
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.application-review-office {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  position: sticky;
+  top: 0;
+}
+
+.application-review-office .badge {
+  align-self: flex-start;
+}
+
+.application-review-check {
+  align-items: center;
+  display: flex;
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+  min-height: 36px;
+}
+
+.application-review-check strong {
+  color: var(--color-ink-muted);
+  margin-left: auto;
+}
+
+.application-review-check input {
+  accent-color: var(--color-primary);
+  height: 18px;
+  width: 18px;
+}
+
+.application-review-check.is-boxed {
+  align-items: flex-start;
+  background: var(--color-warning-soft);
+  border-radius: var(--radius-md);
+  color: var(--color-warning);
+  padding: var(--space-3);
+}
+
+.application-review-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ---------- Solicitud para imprimir ---------- */
+.application-document {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.application-document-header {
+  align-items: center;
+  border-bottom: 2px solid var(--color-primary-strong);
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding-bottom: var(--space-4);
+}
+
+.application-document-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.application-document-logo {
+  height: 64px;
+  object-fit: contain;
+  width: 70px;
+}
+
+.application-document-institute {
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.application-document-line {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.application-document-title {
+  text-align: right;
+}
+
+.application-document-title h2 {
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.application-document-title span {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.application-document-signature {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  margin-top: var(--space-5);
+}
+
+.application-document-signature span {
+  border-top: 1px solid var(--color-ink);
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  padding-top: var(--space-1);
+}
+
+.application-document-box {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  break-inside: avoid;
+  font-size: var(--text-sm);
+  padding: var(--space-4);
+}
+
+.application-document-box h3 {
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary-strong);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+}
+
+.application-document-box ol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.application-document-box li span:first-child {
+  display: inline;
+}
+
+.application-document-checks {
+  float: right;
+  white-space: nowrap;
+}
+
+.application-document-fine {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  font-style: italic;
+}
+
+.application-document-fees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 1024px) {
+  .application-review {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .application-review-office {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .application-steps-title {
+    display: none;
+  }
+
+  .application-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .address-fields,
+  .request-form,
+  .school-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .application-wizard-footer .btn {
+    flex: 1;
+  }
+}
+
+@media print {
+  .application-review {
+    background: none;
+    display: block;
+  }
+
+  .application-review-office {
+    display: none;
+  }
+
+  .application-document {
+    box-shadow: none;
+    gap: var(--space-4);
+    padding: 0;
+  }
+
+  .application-summary {
+    gap: var(--space-3);
+  }
+}

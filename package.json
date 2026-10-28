@@ -9,9 +9,11 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc -b",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler pages deploy"
   },
   "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/nunito-sans": "^5.3.0",
     "fflate": "^0.8.2",
     "firebase": "^13.1.0",
     "jsbarcode": "^3.12.3",

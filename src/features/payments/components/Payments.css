@@ -89,6 +89,40 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 120px auto;
 }
 
+.payment-item.is-book {
+  grid-template-columns: minmax(0, 2fr) 120px auto;
+}
+
+.payment-item-book {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  grid-column: 1 / -1;
+}
+
+.payment-item-book .input-select {
+  flex: 1;
+  min-width: 200px;
+}
+
+.payment-item-quantity {
+  align-items: center;
+  color: var(--color-ink-muted);
+  display: inline-flex;
+  font-size: var(--text-sm);
+  gap: var(--space-2);
+}
+
+.payment-item-quantity .input {
+  width: 84px;
+}
+
+.payment-item-stock {
+  color: var(--color-ink-soft);
+  font-size: var(--text-sm);
+}
+
 .payment-items-footer {
   align-items: center;
   border-top: 1px dashed var(--color-border-strong);
@@ -267,7 +301,8 @@
     width: 100%;
   }
 
-  .payment-item {
+  .payment-item,
+  .payment-item.is-book {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 

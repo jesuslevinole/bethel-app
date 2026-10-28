@@ -1,9 +1,13 @@
 import { buildCatalogPath, PATHS } from '../../routes/paths';
 import type {
   AcademicPeriod,
+  AdmissionApplication,
   AppNotification,
+  Book,
+  BookMovement,
   CourseCost,
   Enrollment,
+  EnrollmentRequest,
   Role,
   SchoolClass,
   Subject,
@@ -14,13 +18,18 @@ import { formatDate, todayIso } from '../../utils/dateFormat';
 import { getPeriodStatus } from '../../utils/periodStatus';
 import { pluralize } from '../../utils/plural';
 import type { Permissions } from '../auth/hooks/usePermissions';
+import { computeBookStock, LOW_STOCK } from '../book-inventory/bookStock';
 
 // Días antes del fin del período en que se avisa.
 const PERIOD_ENDING_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface NotificationSources {
+  applications: AdmissionApplication[];
   assignments: TeacherAssignment[];
+  bookMovements: BookMovement[];
+  books: Book[];
+  enrollmentRequests: EnrollmentRequest[];
   classes: SchoolClass[];
   courseCosts: CourseCost[];
   enrollments: Enrollment[];
@@ -174,10 +183,57 @@ const getRoleNotifications = ({ permissions, roles }: NotificationSources) => {
   ];
 };
 
+const getAdmissionNotifications = ({ applications, enrollmentRequests, permissions }: NotificationSources) => {
+  if (permissions.scope('admissions') !== 'all') return [];
+  const notifications: AppNotification[] = [];
+  const pendingApplications = applications.filter((application) => application.status === 'pending');
+  if (pendingApplications.length > 0) {
+    notifications.push({
+      detail: pendingApplications.map((application) => application.name).join(', '),
+      id: `pending-applications-${pendingApplications.map((application) => application.id).join('-')}`,
+      path: PATHS.admissions,
+      title: `${pluralize(pendingApplications.length, 'solicitud de admisión', 'solicitudes de admisión')} por revisar`,
+      tone: 'warning',
+    });
+  }
+  const pendingRequests = enrollmentRequests.filter((request) => request.status === 'pending');
+  if (pendingRequests.length > 0) {
+    notifications.push({
+      detail: pendingRequests.map((request) => request.studentName).join(', '),
+      id: `pending-enrollment-requests-${pendingRequests.map((request) => request.id).join('-')}`,
+      path: PATHS.admissions,
+      title: `${pluralize(pendingRequests.length, 'inscripción', 'inscripciones')} por confirmar`,
+      tone: 'warning',
+    });
+  }
+  return notifications;
+};
+
+const getBookNotifications = ({ bookMovements, books, permissions }: NotificationSources) => {
+  if (permissions.scope('bookInventory') !== 'all') return [];
+  const stockByBook = computeBookStock(bookMovements);
+  const lowBooks = books.filter((book) => {
+    const stock = stockByBook.get(book.id);
+    return stock && stock.in > 0 && stock.stock <= LOW_STOCK;
+  });
+  if (lowBooks.length === 0) return [];
+  return [
+    {
+      detail: lowBooks.map((book) => `${book.name} (${stockByBook.get(book.id)?.stock ?? 0})`).join(', '),
+      id: `low-stock-${lowBooks.map((book) => `${book.id}:${stockByBook.get(book.id)?.stock ?? 0}`).join('-')}`,
+      path: PATHS.bookInventory,
+      title: `${pluralize(lowBooks.length, 'libro', 'libros')} por agotarse`,
+      tone: 'info' as const,
+    },
+  ];
+};
+
 // Avisos para el usuario actual según lo que su rol puede ver. Primero lo que requiere acción.
 export const buildNotifications = (sources: NotificationSources): AppNotification[] =>
   [
     ...getRoleNotifications(sources),
+    ...getAdmissionNotifications(sources),
+    ...getBookNotifications(sources),
     ...getPeriodNotifications(sources),
     ...getCatalogNotifications(sources),
     ...getPeriodSetupNotifications(sources),

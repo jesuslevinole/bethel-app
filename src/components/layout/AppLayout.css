@@ -32,6 +32,7 @@
   }
 
   .app-layout.is-sidebar-open .sidebar {
+    box-shadow: var(--shadow-pop);
     transform: translateX(0);
   }
 }

@@ -1,6 +1,7 @@
 import { Suspense, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import AcademicPeriodProvider from '../../features/academic-periods/components/AcademicPeriodProvider';
+import AppSettingsProvider from '../../features/customization/components/AppSettingsProvider';
 import ViewAsBanner from '../../features/view-as/components/ViewAsBanner';
 import ViewAsProvider from '../../features/view-as/components/ViewAsProvider';
 import ListSkeleton from '../../shared/components/ListSkeleton';
@@ -10,7 +11,7 @@ import Topbar from './Topbar';
 import './AppLayout.css';
 
 // Marco del portal para todos los roles: menú lateral (filtrado por rol), barra superior (período,
-// notificaciones, ver como) y la vista. ViewAsProvider va por fuera: todo lo de adentro usa la sesión "vista como".
+// notificaciones, ver como) y la vista. AppSettingsProvider da el menú y las columnas personalizadas. ViewAsProvider va por fuera: todo lo de adentro usa la sesión "vista como".
 const AppLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -24,7 +25,8 @@ const AppLayout = () => {
 
   return (
     <ViewAsProvider>
-      <AcademicPeriodProvider>
+      <AppSettingsProvider>
+        <AcademicPeriodProvider>
         <SidebarContext.Provider value={sidebarControls}>
           <div className={`app-layout${isSidebarOpen ? ' is-sidebar-open' : ''}`}>
             <Sidebar />
@@ -45,7 +47,8 @@ const AppLayout = () => {
             </main>
           </div>
         </SidebarContext.Provider>
-      </AcademicPeriodProvider>
+        </AcademicPeriodProvider>
+      </AppSettingsProvider>
     </ViewAsProvider>
   );
 };

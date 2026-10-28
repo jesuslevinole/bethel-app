@@ -47,7 +47,7 @@ const ChipPicker = ({
         {selectedOptions.length > 0 && (
           <div className="chip-list">
             {selectedOptions.map((option) => (
-              <span className="chip" key={option.value}>
+              <span className={option.disabled ? 'chip chip-picker-conflict' : 'chip'} key={option.value}>
                 {option.label}
                 <button
                   aria-label={`Quitar ${option.label}`}
@@ -74,9 +74,10 @@ const ChipPicker = ({
         {visibleOptions.length === 0 && <li className="chip-picker-empty">{emptyText}</li>}
         {visibleOptions.map((option) => (
           <li key={option.value}>
-            <label className="chip-picker-option">
+            <label className={`chip-picker-option${option.disabled ? ' is-disabled' : ''}`}>
               <input
                 checked={selectedValues.includes(option.value)}
+                disabled={option.disabled && !selectedValues.includes(option.value)}
                 onChange={() => handleToggle(option.value)}
                 type="checkbox"
               />

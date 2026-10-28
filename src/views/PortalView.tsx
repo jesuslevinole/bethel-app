@@ -1,4 +1,4 @@
-import { GraduationCap, Presentation, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Presentation, ShieldCheck, UserPlus } from 'lucide-react';
 import BrandShell from '../components/BrandShell';
 import { useAppSession } from '../features/auth/appSessionContext';
 import PortalIntro from '../features/portal/components/PortalIntro';
@@ -28,6 +28,16 @@ const PortalView = () => {
         <li>
           <PortalOption description="Tu ficha, tu inscripción y tu carnet." icon={GraduationCap} title="Estudiantes" to={entryPath} />
         </li>
+        {status === 'signedOut' && (
+          <li>
+            <PortalOption
+              description="Crea tu cuenta y llena tu solicitud de admisión."
+              icon={UserPlus}
+              title="Soy estudiante nuevo"
+              to={PATHS.register}
+            />
+          </li>
+        )}
       </ul>
     </BrandShell>
   );

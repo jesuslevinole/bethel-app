@@ -1,38 +1,48 @@
 /* Bethel Bible Institute — variables de diseño.
-   Violeta institucional profundo (heredado de la hoja de Bethel), blanco frío y un dorado
-   discreto que se usa solo en el escudo y en el indicador de la sección activa. */
+   Ciruela profunda (la identidad violeta del instituto, más cálida), perla rosada de fondo, rosa empolvado
+   para los detalles y el dorado solo en el escudo. Títulos en Cormorant Garamond; texto en Nunito Sans,
+   grande y claro para quien usa poco la computadora. */
 :root {
-  --color-accent: #c8a15a;
-  --color-accent-soft: #f7efdd;
-  --color-bg: #faf9fd;
-  --color-border: #e7e1f1;
-  --color-border-strong: #d4cae6;
-  --color-danger: #b42318;
-  --color-danger-soft: #fdecea;
-  --color-ink: #1f1833;
-  --color-ink-muted: #625a78;
-  --color-ink-soft: #8d859f;
+  --color-accent: #c98b9c;
+  --color-accent-soft: #f9ebef;
+  --color-accent-strong: #9c4f66;
+  --color-bg: #fbf7fa;
+  --color-border: #eee2ec;
+  --color-border-strong: #dcc9d8;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fcebea;
+  --color-gold: #c9a464;
+  --color-info: #3e5c96;
+  --color-info-soft: #e9eef8;
+  --color-ink: #2a1b2d;
+  --color-ink-muted: #6b5a6e;
+  --color-ink-soft: #978899;
+  --color-on-accent: #ffffff;
   --color-on-primary: #ffffff;
-  --color-primary: #4f3291;
-  --color-primary-hover: #422a7b;
-  --color-primary-soft: #f0ebf9;
-  --color-primary-strong: #2b1b52;
-  --color-row-hover: #fcfbff;
-  --color-success: #1d7a4e;
-  --color-success-soft: #e4f4eb;
+  --color-primary: #6b2f6e;
+  --color-primary-hover: #57245a;
+  --color-primary-soft: #f5ecf4;
+  --color-primary-strong: #3a173d;
+  --color-row-hover: #fdf9fc;
+  --color-sidebar: #2b1230;
+  --color-sidebar-hover: rgb(255 255 255 / 7%);
+  --color-sidebar-ink: rgb(255 247 252 / 78%);
+  --color-sidebar-line: rgb(255 255 255 / 10%);
+  --color-success: #2e7a57;
+  --color-success-soft: #e5f3ec;
   --color-surface: #ffffff;
-  --color-warning: #8a5a00;
-  --color-warning-soft: #fdf3dc;
-  --focus-ring: 0 0 0 3px rgb(79 50 145 / 18%);
-  --font-display: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
-  --font-ui: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --radius-lg: 18px;
+  --color-warning: #95600f;
+  --color-warning-soft: #fcf1de;
+  --focus-ring: 0 0 0 3px rgb(107 47 110 / 20%);
+  --font-display: 'Cormorant Garamond', 'Libre Caslon Text', Georgia, serif;
+  --font-ui: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius-lg: 20px;
   --radius-md: 12px;
   --radius-pill: 999px;
   --radius-sm: 8px;
-  --shadow-panel: 0 1px 2px rgb(31 24 51 / 4%), 0 10px 28px -16px rgb(43 27 82 / 16%);
-  --shadow-pop: 0 24px 56px -20px rgb(31 24 51 / 35%);
-  --sidebar-width: 268px;
+  --shadow-panel: 0 1px 2px rgb(58 23 61 / 4%), 0 14px 34px -20px rgb(58 23 61 / 22%);
+  --shadow-pop: 0 28px 60px -22px rgb(43 18 48 / 40%);
+  --sidebar-width: 272px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -40,11 +50,11 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
-  --text-hero: clamp(2.6rem, 1.7rem + 3.6vw, 4.5rem);
-  --text-lg: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
-  --text-md: 0.9375rem;
-  --text-sm: 0.875rem;
-  --text-xl: clamp(1.6rem, 1.3rem + 1vw, 2rem);
-  --text-xs: 0.78rem;
-  --view-gutter: clamp(16px, 3vw, 40px);
+  --text-hero: clamp(2.8rem, 1.9rem + 3.6vw, 4.8rem);
+  --text-lg: clamp(1.25rem, 1.15rem + 0.35vw, 1.4rem);
+  --text-md: 1rem;
+  --text-sm: 0.9375rem;
+  --text-xl: clamp(2rem, 1.6rem + 1.2vw, 2.6rem);
+  --text-xs: 0.8125rem;
+  --view-gutter: clamp(16px, 3vw, 44px);
 }

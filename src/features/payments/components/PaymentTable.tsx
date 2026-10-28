@@ -6,6 +6,7 @@ import { formatDate } from '../../../utils/dateFormat';
 import { formatMoney } from '../../../utils/money';
 import { getRelationName } from '../../../utils/relations';
 import { formatInvoiceNumber } from '../services/paymentRecords';
+import { useColumnLabels } from '../../customization/useColumnLabels';
 
 interface PaymentTableProps {
   classNames: Map<string, string>;
@@ -31,60 +32,64 @@ const PaymentTable = ({
   payments,
   rowPermissions,
   studentNames,
-}: PaymentTableProps) => (
-  <div className="table-wrap">
-    <table className="table payment-table">
-      <thead>
-        <tr>
-          <th scope="col">Invoice</th>
-          <th scope="col">Fecha</th>
-          {studentNames && <th scope="col">Alumno</th>}
-          <th scope="col">Clase</th>
-          <th scope="col">Conceptos</th>
-          <th scope="col">Forma de pago</th>
-          <th className="cell-num" scope="col">
-            Monto
-          </th>
-          <th scope="col">
-            <span className="visually-hidden">Acciones</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {payments.map((payment) => (
-          <tr key={payment.id}>
-            <td className="cell-id">{formatInvoiceNumber(payment.invoiceNumber)}</td>
-            <td className="cell-date">{formatDate(payment.date)}</td>
-            {studentNames && <td className="cell-strong">{getRelationName(studentNames, payment.studentId)}</td>}
-            <td>{getRelationName(classNames, payment.classId)}</td>
-            <td className="payment-concepts">{describeItems(payment)}</td>
-            <td>
-              {payment.incomeTypeName}
-              {payment.bankName && <span className="payment-bank">{payment.bankName}</span>}
-            </td>
-            <td className="cell-num cell-strong">{formatMoney(payment.total)}</td>
-            <td className="cell-actions">
-              <div className="payment-row-actions">
-                <button className="btn btn-ghost btn-compact" onClick={() => onOpenInvoice(payment)} type="button">
-                  <FileText size={16} />
-                  Invoice
-                </button>
-                {onEdit && onDelete && (
-                  <RowActions
-                    canDelete={rowPermissions.canDelete}
-                    canEdit={rowPermissions.canEdit}
-                    itemLabel={`el pago ${formatInvoiceNumber(payment.invoiceNumber)}`}
-                    onDelete={() => onDelete(payment)}
-                    onEdit={() => onEdit(payment)}
-                  />
-                )}
-              </div>
-            </td>
+}: PaymentTableProps) => {
+  const columnLabel = useColumnLabels('payments');
+
+  return (
+    <div className="table-wrap">
+      <table className="table payment-table">
+        <thead>
+          <tr>
+            <th scope="col">{columnLabel('invoice')}</th>
+            <th scope="col">{columnLabel('date')}</th>
+            {studentNames && <th scope="col">{columnLabel('student')}</th>}
+            <th scope="col">{columnLabel('className')}</th>
+            <th scope="col">{columnLabel('concepts')}</th>
+            <th scope="col">{columnLabel('method')}</th>
+            <th className="cell-num" scope="col">
+              {columnLabel('amount')}
+            </th>
+            <th scope="col">
+              <span className="visually-hidden">Acciones</span>
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
+        </thead>
+        <tbody>
+          {payments.map((payment) => (
+            <tr key={payment.id}>
+              <td className="cell-id">{formatInvoiceNumber(payment.invoiceNumber)}</td>
+              <td className="cell-date">{formatDate(payment.date)}</td>
+              {studentNames && <td className="cell-strong">{getRelationName(studentNames, payment.studentId)}</td>}
+              <td>{getRelationName(classNames, payment.classId)}</td>
+              <td className="payment-concepts">{describeItems(payment)}</td>
+              <td>
+                {payment.incomeTypeName}
+                {payment.bankName && <span className="payment-bank">{payment.bankName}</span>}
+              </td>
+              <td className="cell-num cell-strong">{formatMoney(payment.total)}</td>
+              <td className="cell-actions">
+                <div className="payment-row-actions">
+                  <button className="btn btn-ghost btn-compact" onClick={() => onOpenInvoice(payment)} type="button">
+                    <FileText size={16} />
+                    Invoice
+                  </button>
+                  {onEdit && onDelete && (
+                    <RowActions
+                      canDelete={rowPermissions.canDelete}
+                      canEdit={rowPermissions.canEdit}
+                      itemLabel={`el pago ${formatInvoiceNumber(payment.invoiceNumber)}`}
+                      onDelete={() => onDelete(payment)}
+                      onEdit={() => onEdit(payment)}
+                    />
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export default PaymentTable;

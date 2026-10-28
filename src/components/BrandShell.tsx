@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Crest from '../shared/components/Crest';
+import OliveBranch from './layout/OliveBranch';
 import './BrandShell.css';
 
 interface BrandShellProps {
@@ -13,9 +14,7 @@ const BrandShell = ({ children }: BrandShellProps) => {
   return (
     <div className="brand-shell">
       <section className="brand-panel">
-        <span aria-hidden="true" className="brand-panel-watermark">
-          B
-        </span>
+        <OliveBranch placement="hero" />
         <div className="brand-panel-top">
           <Crest inverted size={48} />
           <span className="brand-panel-place">Instituto bíblico</span>

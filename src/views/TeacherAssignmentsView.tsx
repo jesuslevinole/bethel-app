@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useAcademicPeriod } from '../features/academic-periods/academicPeriodContext';
 import { usePermissions, useRowPermissions } from '../features/auth/hooks/usePermissions';
+import { findRepeatedSubjects } from '../features/teacher-assignments/assignmentForm';
 import { toAssignmentRows } from '../features/teacher-assignments/assignmentRows';
 import AssignmentForm from '../features/teacher-assignments/components/AssignmentForm';
 import RefreshRostersButton from '../features/teacher-assignments/components/RefreshRostersButton';
@@ -42,6 +43,10 @@ const TeacherAssignmentsView = () => {
       (!classFilter || row.assignment.classId === classFilter) &&
       matchesSearch([row.teacherName, ...row.subjectNames], search),
   );
+  const repeatedSubjects = findRepeatedSubjects(assignments).map(
+    ([subjectId, teacherIds]) =>
+      `${getRelationName(subjectNames, subjectId)} (${teacherIds.map((teacherId) => getRelationName(teacherNames, teacherId)).join(' y ')})`,
+  );
   const teacherCount = new Set(assignments.map((assignment) => assignment.teacherId)).size;
   const subtitle = selectedPeriod
     ? `${pluralize(teacherCount, 'maestro', 'maestros')} con materias en ${selectedPeriod.name}`
@@ -72,6 +77,12 @@ const TeacherAssignmentsView = () => {
       {showNoPeriod && <NoPeriodState />}
       {selectedPeriod && (
         <>
+          {repeatedSubjects.length > 0 && (
+            <p className="form-alert">
+              Materias con más de un maestro en este período: {repeatedSubjects.join(', ')}. Edita los registros y deja
+              cada materia con un solo maestro.
+            </p>
+          )}
           <FilterChips
             allLabel="Todas las clases"
             label="Filtrar por clase"

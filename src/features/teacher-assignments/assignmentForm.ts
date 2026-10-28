@@ -18,25 +18,41 @@ interface AssignmentValidationContext {
   teacherNames: Map<string, string>;
 }
 
-// Una materia de una clase la da un solo maestro por período académico.
+// Materias que ya tienen maestro en el período (sin contar el registro que se está editando): materia → maestro.
+// Regla: una materia la da un solo maestro por período académico.
+export const getTakenSubjects = (periodAssignments: TeacherAssignment[], ownId?: string) => {
+  const taken = new Map<string, string>();
+  periodAssignments
+    .filter((assignment) => assignment.id !== ownId)
+    .forEach((assignment) => assignment.subjectIds.forEach((subjectId) => taken.set(subjectId, assignment.teacherId)));
+  return taken;
+};
+
 export const validateAssignment = (values: AssignmentFormValues, context: AssignmentValidationContext) => {
   if (!values.date || !values.teacherId || !values.classId) return 'Completa la fecha, el maestro y la clase.';
   if (values.subjectIds.length === 0) return 'Elige al menos una materia.';
 
-  const conflict = context.periodAssignments.find(
-    (assignment) =>
-      assignment.id !== context.ownId &&
-      assignment.classId === values.classId &&
-      assignment.subjectIds.some((subjectId) => values.subjectIds.includes(subjectId)),
-  );
-  if (!conflict) return null;
+  const taken = getTakenSubjects(context.periodAssignments, context.ownId);
+  const conflicts = values.subjectIds
+    .filter((subjectId) => taken.has(subjectId))
+    .map(
+      (subjectId) =>
+        `${getRelationName(context.subjectNames, subjectId)} (${getRelationName(context.teacherNames, taken.get(subjectId) ?? '')})`,
+    );
+  if (conflicts.length === 0) return null;
+  const verb = conflicts.length === 1 ? 'ya tiene maestro' : 'ya tienen maestro';
+  return `${conflicts.join(', ')} ${verb} en este período. Quítala${conflicts.length === 1 ? '' : 's'} para guardar.`;
+};
 
-  const takenSubjects = conflict.subjectIds
-    .filter((subjectId) => values.subjectIds.includes(subjectId))
-    .map((subjectId) => getRelationName(context.subjectNames, subjectId))
-    .join(', ');
-  const teacherName = getRelationName(context.teacherNames, conflict.teacherId);
-  return `${takenSubjects} ya está asignada a ${teacherName} en esa clase este período.`;
+// Materias repetidas en el período (registros guardados antes de esta regla): materia → maestros que la tienen.
+export const findRepeatedSubjects = (periodAssignments: TeacherAssignment[]) => {
+  const teachersBySubject = new Map<string, string[]>();
+  periodAssignments.forEach((assignment) =>
+    assignment.subjectIds.forEach((subjectId) =>
+      teachersBySubject.set(subjectId, [...(teachersBySubject.get(subjectId) ?? []), assignment.teacherId]),
+    ),
+  );
+  return [...teachersBySubject].filter(([, teacherIds]) => teacherIds.length > 1);
 };
 
 // Materias que se ofrecen para la clase elegida: las de esa clase, las que aún no tienen clase

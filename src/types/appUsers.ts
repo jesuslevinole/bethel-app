@@ -8,6 +8,9 @@ export interface AppUser {
   isTest?: boolean;
   name: string;
   roleId: string;
+  // Cuenta creada por el propio estudiante desde "Crear mi cuenta" (rol Estudiante, sin alumno hasta que
+  // Administración apruebe su solicitud de admisión).
+  selfRegistered?: boolean;
   studentId: string | null;
   teacherId: string | null;
 }

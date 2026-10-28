@@ -10,11 +10,11 @@
   cursor: pointer;
   display: inline-flex;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   gap: var(--space-2);
   justify-content: center;
-  min-height: 42px;
-  padding: 0 18px;
+  min-height: 44px;
+  padding: 0 20px;
   text-decoration: none;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
   white-space: nowrap;
@@ -27,6 +27,7 @@
 
 .btn-primary {
   background: var(--color-primary);
+  box-shadow: 0 6px 16px -10px rgb(107 47 110 / 70%);
   color: var(--color-on-primary);
 }
 
@@ -62,6 +63,12 @@
   background: #9a1d13;
 }
 
+.btn-large {
+  font-size: var(--text-md);
+  min-height: 52px;
+  padding: 0 28px;
+}
+
 .btn-compact {
   font-size: var(--text-xs);
   min-height: 32px;
@@ -82,10 +89,10 @@
 .btn-icon {
   border-radius: var(--radius-sm);
   color: var(--color-ink-muted);
-  height: 36px;
-  min-height: 36px;
+  height: 40px;
+  min-height: 40px;
   padding: 0;
-  width: 36px;
+  width: 40px;
 }
 
 .btn-icon:hover:not(:disabled) {
@@ -125,18 +132,28 @@
 }
 
 .view-title {
+  color: var(--color-primary-strong);
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
+  letter-spacing: -0.005em;
+  line-height: 1.05;
   margin: 0;
 }
 
 .view-subtitle {
   color: var(--color-ink-muted);
-  font-size: var(--text-sm);
-  margin: var(--space-1) 0 0;
+  font-size: var(--text-md);
+  margin: var(--space-2) 0 0;
+  max-width: 70ch;
+}
+
+.view-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
 }
 
 .view-actions {
@@ -163,10 +180,18 @@
   padding: var(--space-5) var(--space-5) var(--space-3);
 }
 
+.panel-padded {
+  padding: var(--space-5);
+}
+
 .panel-title {
+  align-items: center;
+  color: var(--color-primary-strong);
+  display: flex;
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 700;
+  gap: var(--space-2);
   margin: 0;
 }
 
@@ -189,7 +214,7 @@
 .field-label {
   color: var(--color-ink);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .field-hint {
@@ -209,10 +234,15 @@
   border-radius: var(--radius-md);
   color: var(--color-ink);
   font-size: var(--text-md);
-  min-height: 44px;
+  min-height: 48px;
   padding: 0 var(--space-3);
   transition: border-color 150ms ease, box-shadow 150ms ease;
   width: 100%;
+}
+
+textarea.input {
+  line-height: 1.5;
+  padding: var(--space-3);
 }
 
 .input::placeholder {
@@ -237,7 +267,7 @@
 
 .input-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23625a78' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b5a6e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-position: right 12px center;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -280,9 +310,9 @@
 }
 
 .form-section-title {
-  color: var(--color-ink);
+  color: var(--color-primary-strong);
   font-family: var(--font-display);
-  font-size: var(--text-md);
+  font-size: 1.2rem;
   font-weight: 700;
   margin: 0;
 }
@@ -317,18 +347,18 @@
 }
 
 .table th {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-strong);
   color: var(--color-ink-muted);
   font-size: var(--text-xs);
-  font-weight: 600;
-  padding: 12px;
+  font-weight: 700;
+  padding: 14px 12px;
   text-align: left;
   white-space: nowrap;
 }
 
 .table td {
   border-bottom: 1px solid var(--color-border);
-  padding: 14px 12px;
+  padding: 15px 12px;
   vertical-align: middle;
 }
 
@@ -382,6 +412,15 @@
 
 .cell-muted {
   color: var(--color-ink-muted);
+}
+
+/* Segunda línea pequeña dentro de una celda (notas, motivo). */
+.cell-note {
+  color: var(--color-ink-soft);
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  margin-top: 2px;
 }
 
 /* ---------- Tarjetas de registro (teléfono) ---------- */
@@ -470,6 +509,11 @@
   white-space: nowrap;
 }
 
+.badge-info {
+  background: var(--color-info-soft);
+  color: var(--color-info);
+}
+
 .badge-danger {
   background: var(--color-danger-soft);
   color: var(--color-danger);
@@ -519,7 +563,7 @@
 .seed-banner {
   align-items: center;
   background: var(--color-accent-soft);
-  border: 1px solid #ecdcb7;
+  border: 1px solid #efd3db;
   border-radius: var(--radius-lg);
   display: flex;
   flex-wrap: wrap;
@@ -620,7 +664,70 @@
 
 @media (max-width: 760px) {
   .btn {
-    min-height: 44px;
+    min-height: 46px;
+  }
+
+  /* Tablas que en teléfono se ven como tarjetas: cada celda con su encabezado (data-label) al lado. */
+  .table-stack thead {
+    display: none;
+  }
+
+  .table-stack,
+  .table-stack tbody,
+  .table-stack tr,
+  .table-stack td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-stack tr {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .table-stack td {
+    border-bottom: 1px dashed var(--color-border);
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: minmax(96px, 0.8fr) minmax(0, 1.6fr);
+    padding: 10px 0;
+    text-align: left;
+  }
+
+  .table-stack td > span {
+    justify-self: start;
+  }
+
+  .table-stack td[data-label]::before {
+    color: var(--color-ink-soft);
+    content: attr(data-label);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .table-stack td:last-child {
+    border-bottom: 0;
+  }
+
+  .table-stack .cell-num {
+    text-align: left;
+  }
+
+  .table-stack .cell-actions {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .table-stack tbody tr:hover td {
+    background: transparent;
+  }
+
+  .panel-padded {
+    padding: var(--space-4);
   }
 
   .panel-body-flush {

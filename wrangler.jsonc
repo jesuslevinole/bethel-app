@@ -1,10 +1,8 @@
-// Cloudflare Worker con archivos estáticos: sube dist/ y sirve index.html en cualquier ruta (SPA).
+// Cloudflare Pages: `npm run deploy` construye y sube la carpeta dist.
+// Sin 404.html en dist, Pages sirve index.html en cualquier ruta (SPA): no hace falta _redirects.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "bethel-institute",
-  "compatibility_date": "2026-10-01",
-  "assets": {
-    "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-01"
 }
