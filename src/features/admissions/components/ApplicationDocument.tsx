@@ -1,26 +1,51 @@
 import logoUrl from '../../../assets/bethel-logo.png';
 import { INSTITUTE } from '../../../config/institute';
-import type { AdmissionApplication } from '../../../types/index';
+import type { AdmissionApplication, Signature } from '../../../types/index';
 import { formatDate } from '../../../utils/dateFormat';
-import { APPLICATION_FEES, toApplicationFormValues } from '../applicationForm';
+import {
+  APPLICATION_FEES,
+  isSigned,
+  PASTOR_CERTIFICATION,
+  PASTOR_QUESTIONS,
+  toApplicationFormValues,
+} from '../applicationForm';
 import ApplicationSummary from './ApplicationSummary';
 
 interface ApplicationDocumentProps {
   application: AdmissionApplication;
 }
 
-const PASTOR_QUESTIONS = [
-  '¿Sabe usted algún motivo por el cual el solicitante no debe ser admitido(a) al Instituto?',
-  '¿Tiene el solicitante más de dos (2) meses de convertido?',
-  '¿Respalda el testimonio del estudiante?',
-  '¿Notificará usted cuando el solicitante demuestre cambio espiritual?',
-  '¿Se hará responsable la Iglesia de cumplir con la deuda del estudiante?',
-];
+interface SignatureLineProps {
+  label: string;
+  signature: Signature | null | undefined;
+}
 
-// Solicitud lista para imprimir y firmar (solicitante, pastor y oficina), como el formulario IBAD80.
+// Línea de firma: con la firma hecha en pantalla encima (si existe) y su fecha al lado.
+const SignatureLine = ({ label, signature }: SignatureLineProps) => (
+  <div className="application-document-signature">
+    <span className="application-document-sign">
+      {isSigned(signature) && <img alt={`Firma de ${signature.signerName}`} src={signature.image} />}
+      <span className="application-document-sign-label">
+        {label}
+        {isSigned(signature) && signature.signerName && `: ${signature.signerName}`}
+      </span>
+    </span>
+    <span className="application-document-sign">
+      <span className="application-document-sign-date">
+        {isSigned(signature) ? formatDate(signature.signedAt) : ''}
+      </span>
+      <span className="application-document-sign-label">Fecha</span>
+    </span>
+  </div>
+);
+
+const check = (isChecked: boolean) => (isChecked ? '☑' : '☐');
+
+// Solicitud lista para imprimir o guardar en PDF, con las firmas hechas en pantalla (formulario IBAD80).
 const ApplicationDocument = ({ application }: ApplicationDocumentProps) => {
   const values = toApplicationFormValues(application, { email: application.email, name: application.name });
   const receivedFees = new Set(application.receivedFees ?? []);
+  const pastorAnswers = application.pastorAnswers ?? [];
 
   return (
     <article className="print-document application-document">
@@ -37,29 +62,21 @@ const ApplicationDocument = ({ application }: ApplicationDocumentProps) => {
         </div>
       </header>
       <ApplicationSummary values={values} />
-      <div className="application-document-signature">
-        <span>Firma del solicitante</span>
-        <span>Fecha</span>
-      </div>
+      <SignatureLine label="Firma del solicitante" signature={application.applicantSignature} />
       <section className="application-document-box">
         <h3>Para el uso del pastor del solicitante solamente</h3>
         <ol>
-          {PASTOR_QUESTIONS.map((question) => (
+          {PASTOR_QUESTIONS.map((question, index) => (
             <li key={question}>
               <span>{question}</span>
-              <span className="application-document-checks">☐ Sí ☐ No</span>
+              <span className="application-document-checks">
+                {check(pastorAnswers[index] === 'yes')} Sí {check(pastorAnswers[index] === 'no')} No
+              </span>
             </li>
           ))}
         </ol>
-        <p className="application-document-fine">
-          Yo certifico en lo mejor de mi conocimiento que todas mis respuestas en esta aplicación son correctas. Yo me
-          comprometeré a cumplir con las reglas y regulaciones del Distrito Hispano del Este y del Instituto Bíblico de
-          las Asambleas de Dios.
-        </p>
-        <div className="application-document-signature">
-          <span>Firma del pastor</span>
-          <span>Fecha</span>
-        </div>
+        <p className="application-document-fine">{PASTOR_CERTIFICATION}</p>
+        <SignatureLine label="Firma del pastor" signature={application.pastorSignature} />
       </section>
       <section className="application-document-box">
         <h3>Para el uso de la oficina del instituto solamente</h3>
@@ -67,15 +84,12 @@ const ApplicationDocument = ({ application }: ApplicationDocumentProps) => {
         <ul className="application-document-fees">
           {APPLICATION_FEES.map((fee) => (
             <li key={fee.key}>
-              {receivedFees.has(fee.key) ? '☑' : '☐'} {fee.label}
+              {check(receivedFees.has(fee.key))} {fee.label}
               {fee.amount !== null && ` ($${fee.amount}.00)`}
             </li>
           ))}
         </ul>
-        <div className="application-document-signature">
-          <span>Firma de secretaria/o</span>
-          <span>Fecha</span>
-        </div>
+        <SignatureLine label="Firma de secretaria/o" signature={application.officeSignature} />
       </section>
     </article>
   );

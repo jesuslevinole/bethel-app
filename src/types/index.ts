@@ -7,6 +7,7 @@ export type {
   PostalAddress,
   PreviousInstitute,
   SchoolRecord,
+  Signature,
   YesNo,
 } from './admissionApplications';
 export type { AppSettings, NavGroup } from './appSettings';

@@ -178,3 +178,8 @@ Decisiones que alguien podría deshacer por error, y pendientes. Agrega al final
 
 ## 10/28/2026 — Deploy en Cloudflare Workers
 - El proyecto de Cloudflare es de Workers (su build corre `npx wrangler deploy`), no de Pages. `wrangler.jsonc` pasó de `pages_build_output_dir` a `assets` con `not_found_handling: single-page-application`. Revisado con `npx wrangler deploy --dry-run` (sube dist sin script).
+
+## 10/29/2026 — Firmas, catálogos en modal y nombres de botones
+- La solicitud de admisión se firma en pantalla (solicitante, pastor y secretaria/o). Las firmas son imágenes PNG pequeñas guardadas en el mismo documento de la solicitud (no hay Storage en el plan Spark). No es firma electrónica certificada: es la firma dibujada con nombre y fecha, como en papel.
+- Botones: "Inscribir alumno" → "Inscripciones" y "Registrar alumno" → "Registro" (botón y título del modal), a pedido del instituto.
+- Los formularios de Catálogos ahora son modales (antes en línea en la lista).

@@ -132,32 +132,14 @@
   white-space: nowrap;
 }
 
-/* ---------- Formulario en línea ---------- */
-.catalog-form {
-  align-items: flex-end;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin: var(--space-1) 0;
-  padding: var(--space-3);
-}
-
-.catalog-form-name {
-  flex: 2 1 220px;
-}
-
-.catalog-form-extra {
-  flex: 1 1 120px;
-}
-
+/* ---------- Formulario (modal) ---------- */
 .catalog-form-toggle {
   align-items: center;
   display: flex;
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   gap: var(--space-2);
+  grid-column: 1 / -1;
   min-height: 44px;
 }
 
@@ -165,15 +147,6 @@
   accent-color: var(--color-primary);
   height: 18px;
   width: 18px;
-}
-
-.catalog-form-actions {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.catalog-form-error {
-  flex-basis: 100%;
 }
 
 @media (max-width: 760px) {

@@ -50,7 +50,7 @@ const EnrollmentForm = ({
     if (await run(() => saveEnrollment(enrollment, enrollmentData))) onClose();
   };
 
-  const title = enrollment ? 'Editar inscripción' : 'Inscribir alumno';
+  const title = enrollment ? 'Editar inscripción' : 'Inscripciones';
 
   return (
     <Modal onClose={onClose} subtitle={`Período académico ${period.name}`} title={title}>

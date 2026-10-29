@@ -1,6 +1,7 @@
-import type { FormEvent, KeyboardEvent } from 'react';
+import type { FormEvent } from 'react';
 import ClassSelect from '../../../shared/components/ClassSelect';
 import Field from '../../../shared/components/Field';
+import Modal from '../../../shared/components/Modal';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import { useFormFields } from '../../../shared/hooks/useFormFields';
 import { SEMESTER_OPTIONS } from '../../../utils/classDays';
@@ -25,7 +26,7 @@ interface CatalogItemFormProps {
   onClose: () => void;
 }
 
-// Agregar o editar un elemento de catálogo en la misma lista (sin modal).
+// Agregar o editar un elemento de catálogo en un modal.
 const CatalogItemForm = ({
   classes,
   defaultClassId = '',
@@ -65,10 +66,6 @@ const CatalogItemForm = ({
     if (await run(saveItem)) onClose();
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === 'Escape') onClose();
-  };
-
   const renderExtraField = (field: CatalogExtraField) => {
     const fieldId = `${fieldIdPrefix}-${field.name}`;
     if (field.kind === 'toggle') {
@@ -85,7 +82,7 @@ const CatalogItemForm = ({
     }
     if (field.kind === 'semester') {
       return (
-        <Field className="catalog-form-extra" htmlFor={fieldId} key={field.name} label={field.label}>
+        <Field htmlFor={fieldId} key={field.name} label={field.label}>
           <select
             className="input input-select"
             id={fieldId}
@@ -104,7 +101,7 @@ const CatalogItemForm = ({
     }
     if (field.kind === 'class') {
       return (
-        <Field className="catalog-form-extra" htmlFor={fieldId} key={field.name} label={field.label}>
+        <Field htmlFor={fieldId} key={field.name} label={field.label}>
           <ClassSelect
             classes={classes}
             id={fieldId}
@@ -116,7 +113,7 @@ const CatalogItemForm = ({
     }
     const textFieldName = field.name as Exclude<CatalogExtraField['name'], 'classId' | 'semester' | 'usesBank'>;
     return (
-      <Field className="catalog-form-extra" htmlFor={fieldId} key={field.name} label={field.label}>
+      <Field htmlFor={fieldId} key={field.name} label={field.label}>
         <input
           className="input"
           id={fieldId}
@@ -130,28 +127,36 @@ const CatalogItemForm = ({
     );
   };
 
+  const title = item ? `Editar ${definition.singular}` : `Agregar ${definition.singular}`;
+
   return (
-    <form className="catalog-form" noValidate onKeyDown={handleKeyDown} onSubmit={handleSave}>
-      <Field className="catalog-form-name" htmlFor={`${fieldIdPrefix}-name`} label={definition.nameLabel}>
-        <input
-          autoFocus
-          className="input"
-          id={`${fieldIdPrefix}-name`}
-          onChange={(event) => setField('name', event.target.value)}
-          value={values.name}
-        />
-      </Field>
-      {definition.extraFields.map(renderExtraField)}
-      <div className="catalog-form-actions">
-        <button className="btn btn-secondary" disabled={isRunning} onClick={onClose} type="button">
-          Cancelar
-        </button>
-        <button className="btn btn-primary" disabled={isRunning} type="submit">
-          {isRunning ? 'Guardando…' : 'Guardar'}
-        </button>
-      </div>
-      {error && <p className="catalog-form-error form-alert">{error}</p>}
-    </form>
+    <Modal onClose={onClose} size="sm" subtitle={definition.title} title={title}>
+      <form className="modal-form" noValidate onSubmit={handleSave}>
+        <div className="modal-body">
+          <div className="form-grid">
+            <Field className="span-all" htmlFor={`${fieldIdPrefix}-name`} label={definition.nameLabel}>
+              <input
+                autoFocus
+                className="input"
+                id={`${fieldIdPrefix}-name`}
+                onChange={(event) => setField('name', event.target.value)}
+                value={values.name}
+              />
+            </Field>
+            {definition.extraFields.map(renderExtraField)}
+          </div>
+          {error && <p className="form-alert">{error}</p>}
+        </div>
+        <footer className="modal-footer">
+          <button className="btn btn-secondary" disabled={isRunning} onClick={onClose} type="button">
+            Cancelar
+          </button>
+          <button className="btn btn-primary" disabled={isRunning} type="submit">
+            {isRunning ? 'Guardando…' : 'Guardar'}
+          </button>
+        </footer>
+      </form>
+    </Modal>
   );
 };
 

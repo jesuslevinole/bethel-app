@@ -31,8 +31,16 @@ export interface SchoolRecord {
   name: string;
 }
 
+// Firma hecha en pantalla (dedo o mouse): imagen PNG en data URL, quién firmó y la fecha (AAAA-MM-DD).
+export interface Signature {
+  image: string;
+  signedAt: string;
+  signerName: string;
+}
+
 export interface AdmissionApplication {
   address: PostalAddress;
+  applicantSignature?: Signature | null;
   birthDate: string;
   birthGender: BirthGender;
   birthPlace: string;
@@ -50,8 +58,13 @@ export interface AdmissionApplication {
   id: string;
   maritalStatus: MaritalStatus;
   name: string;
+  // Firma de la secretaria/o al recibir la solicitud.
+  officeSignature?: Signature | null;
   otherInstitute: PreviousInstitute;
+  // Respuestas del pastor a las 5 preguntas del formulario (en orden), y su firma.
+  pastorAnswers?: YesNo[];
   pastorName: string;
+  pastorSignature?: Signature | null;
   pastorPhone: string;
   phone: string;
   primarySchool: SchoolRecord;

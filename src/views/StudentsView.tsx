@@ -62,7 +62,7 @@ const StudentsView = () => {
         {permissions.can('students', 'create') && (
           <button className="btn btn-primary" onClick={openNew} type="button">
             <UserPlus size={18} />
-            Registrar alumno
+            Registro
           </button>
         )}
       </ViewHeader>

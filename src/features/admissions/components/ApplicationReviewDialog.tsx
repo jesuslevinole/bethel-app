@@ -1,14 +1,22 @@
 import { Check, Printer, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import DateInput from '../../../shared/components/DateInput';
+import SignaturePad from '../../../shared/components/SignaturePad';
 import Field from '../../../shared/components/Field';
 import Modal from '../../../shared/components/Modal';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import type { AdmissionApplication, Student } from '../../../types/index';
-import { todayIso } from '../../../utils/dateFormat';
+import { formatDate, todayIso } from '../../../utils/dateFormat';
 import { normalizeText } from '../../../utils/search';
 import { UserFacingError } from '../../../utils/userFacingError';
-import { APPLICATION_FEES, APPLICATION_STATUS_BADGES, APPLICATION_STATUS_LABELS } from '../applicationForm';
+import { useAppSession } from '../../auth/appSessionContext';
+import {
+  APPLICATION_FEES,
+  APPLICATION_STATUS_BADGES,
+  APPLICATION_STATUS_LABELS,
+  EMPTY_PASTOR_ANSWERS,
+  isSigned,
+} from '../applicationForm';
 import {
   approveApplication,
   rejectApplication,
@@ -16,6 +24,7 @@ import {
   type OfficeReview,
 } from '../services/applicationRecords';
 import ApplicationDocument from './ApplicationDocument';
+import PastorSection from './PastorSection';
 import '../../../shared/components/PrintDocument.css';
 
 interface ApplicationReviewDialogProps {
@@ -36,7 +45,12 @@ const ApplicationReviewDialog = ({
   onClose,
   students,
 }: ApplicationReviewDialogProps) => {
+  const { appUser, owner } = useAppSession();
+  const officeSignerName = owner?.name ?? appUser?.name ?? '';
   const [review, setReview] = useState<OfficeReview>({
+    officeSignature: application.officeSignature ?? null,
+    pastorAnswers: application.pastorAnswers ?? EMPTY_PASTOR_ANSWERS,
+    pastorSignature: application.pastorSignature ?? null,
     receivedDate: application.receivedDate ?? todayIso(),
     receivedFees: application.receivedFees ?? [],
     reviewNote: application.reviewNote ?? '',
@@ -80,7 +94,32 @@ const ApplicationReviewDialog = ({
     <Modal onClose={onClose} size="full" subtitle={`Solicitud de ${application.name}`} title="Revisar solicitud">
       <div className="modal-body application-review">
         <div className="application-review-document">
-          <ApplicationDocument application={application} />
+          <ApplicationDocument application={{ ...application, ...review }} />
+          {canReview && (
+            <section className="application-review-signatures">
+              <h3 className="form-section-title">Firmas en pantalla</h3>
+              <p className="application-note">
+                {isSigned(application.applicantSignature)
+                  ? `El solicitante firmó el ${formatDate(application.applicantSignature.signedAt)}.`
+                  : 'El solicitante todavía no firmó: puede firmar desde Mi solicitud.'}
+              </p>
+              <h4 className="application-review-subtitle">Pastor del solicitante</h4>
+              <PastorSection
+                answers={review.pastorAnswers}
+                onAnswersChange={(pastorAnswers) => setReview((current) => ({ ...current, pastorAnswers }))}
+                onSignatureChange={(pastorSignature) => setReview((current) => ({ ...current, pastorSignature }))}
+                pastorName={application.pastorName}
+                signature={review.pastorSignature ?? null}
+              />
+              <h4 className="application-review-subtitle">Oficina</h4>
+              <SignaturePad
+                label="Firma de secretaria/o"
+                onChange={(officeSignature) => setReview((current) => ({ ...current, officeSignature }))}
+                signerName={officeSignerName}
+                value={review.officeSignature ?? null}
+              />
+            </section>
+          )}
         </div>
         <aside className="application-review-office">
           <span className={APPLICATION_STATUS_BADGES[application.status]}>
@@ -142,9 +181,9 @@ const ApplicationReviewDialog = ({
               </button>
             </div>
           )}
-          {canReview && !isPending && (
+          {canReview && (
             <button className="btn btn-secondary" disabled={isRunning} onClick={handleSaveNotes} type="button">
-              Guardar datos de la oficina
+              Guardar firmas y datos de la oficina
             </button>
           )}
           {isApproved && <p className="form-notice">Aprobada: el estudiante ya está en Alumnos.</p>}

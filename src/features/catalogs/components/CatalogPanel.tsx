@@ -46,7 +46,7 @@ const matchesClassFilter = (item: CatalogRecord, classFilter: string) => {
   return item.classId === classFilter;
 };
 
-// editingId: null = nada abierto, 'new' = agregando, otro valor = id del elemento en edición.
+// editingId: null = nada abierto, 'new' = agregando, otro valor = id del elemento en edición (en un modal).
 const CatalogPanel = ({ definition, isLoading, items }: CatalogPanelProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<CatalogRecord | null>(null);
@@ -76,7 +76,9 @@ const CatalogPanel = ({ definition, isLoading, items }: CatalogPanelProps) => {
   const defaultClassId = classFilter === NO_CLASS_FILTER ? '' : classFilter;
   const showSearch = items.length > SEARCH_THRESHOLD;
   const showToolbar = showSearch || (usesClass && items.length > 0);
-  const isEmpty = !isLoading && items.length === 0 && editingId !== 'new';
+  const isEmpty = !isLoading && items.length === 0;
+  const editingItem = editingId && editingId !== 'new' ? (items.find((item) => item.id === editingId) ?? null) : null;
+  const isFormOpen = editingId === 'new' || Boolean(editingItem);
 
   const handleDelete = async (item: CatalogRecord) => {
     await assertNotReferenced(definition.references, item.id);
@@ -85,31 +87,17 @@ const CatalogPanel = ({ definition, isLoading, items }: CatalogPanelProps) => {
 
   const closeForm = () => setEditingId(null);
 
-  const renderItem = (item: CatalogRecord) => {
-    if (editingId === item.id) {
-      return (
-        <CatalogItemForm
-          classes={classes}
-          definition={definition}
-          item={item}
-          items={items}
-          key={item.id}
-          onClose={closeForm}
-        />
-      );
-    }
-    return (
-      <CatalogItemRow
-        classNames={classNames}
-        definition={definition}
-        item={item}
-        key={item.id}
-        onDelete={setItemToDelete}
-        onEdit={(itemToEdit) => setEditingId(itemToEdit.id)}
-        rowPermissions={rowPermissions}
-      />
-    );
-  };
+  const renderItem = (item: CatalogRecord) => (
+    <CatalogItemRow
+      classNames={classNames}
+      definition={definition}
+      item={item}
+      key={item.id}
+      onDelete={setItemToDelete}
+      onEdit={(itemToEdit) => setEditingId(itemToEdit.id)}
+      rowPermissions={rowPermissions}
+    />
+  );
 
   return (
     <section className="panel">
@@ -148,7 +136,13 @@ const CatalogPanel = ({ definition, isLoading, items }: CatalogPanelProps) => {
           {(usesClass || usesSemester) && (
             <div className="catalog-filters">
               {usesClass && (
-                <FilterChips allLabel="Todas" label="Clase" onChange={setClassFilter} options={classOptions} value={classFilter} />
+                <FilterChips
+                  allLabel="Todas"
+                  label="Clase"
+                  onChange={setClassFilter}
+                  options={classOptions}
+                  value={classFilter}
+                />
               )}
               {usesSemester && (
                 <FilterChips
@@ -171,20 +165,19 @@ const CatalogPanel = ({ definition, isLoading, items }: CatalogPanelProps) => {
           title={`Sin ${definition.title.toLowerCase()} todavía`}
         />
       )}
-      <div className="catalog-list">
-        {editingId === 'new' && (
-          <CatalogItemForm
-            classes={classes}
-            defaultClassId={defaultClassId}
-            defaultSemester={semesterFilter}
-            definition={definition}
-            item={null}
-            items={items}
-            onClose={closeForm}
-          />
-        )}
-        {visibleItems.map(renderItem)}
-      </div>
+      <div className="catalog-list">{visibleItems.map(renderItem)}</div>
+      {isFormOpen && (
+        <CatalogItemForm
+          classes={classes}
+          defaultClassId={defaultClassId}
+          defaultSemester={semesterFilter}
+          definition={definition}
+          item={editingItem}
+          items={items}
+          key={editingItem?.id ?? 'new'}
+          onClose={closeForm}
+        />
+      )}
       {!isLoading && items.length > 0 && visibleItems.length === 0 && (
         <p className="catalog-no-results">Ningún registro coincide con el filtro.</p>
       )}

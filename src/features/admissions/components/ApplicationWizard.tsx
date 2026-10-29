@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import { useState } from 'react';
+import SignaturePad from '../../../shared/components/SignaturePad';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import { useFormFields } from '../../../shared/hooks/useFormFields';
 import type { AdmissionApplication } from '../../../types/index';
@@ -12,6 +13,7 @@ import {
 } from '../applicationForm';
 import { submitApplication } from '../services/applicationRecords';
 import ApplicationSummary from './ApplicationSummary';
+import PastorSection from './PastorSection';
 import StepChurch from './StepChurch';
 import StepFaith from './StepFaith';
 import StepPersonal from './StepPersonal';
@@ -35,6 +37,7 @@ const getStepClassName = (index: number, currentIndex: number) => {
 const ApplicationWizard = ({ applicantId, application, defaults, onCancel, onSubmitted }: ApplicationWizardProps) => {
   const { setField, values } = useFormFields<ApplicationFormValues>(toApplicationFormValues(application, defaults));
   const [stepIndex, setStepIndex] = useState(0);
+  const [isPastorOpen, setIsPastorOpen] = useState(Boolean(application?.pastorSignature));
   const { error, isRunning, run, setError } = useAsyncAction();
   const step = APPLICATION_STEPS[stepIndex];
   const isLastStep = stepIndex === APPLICATION_STEPS.length - 1;
@@ -102,6 +105,35 @@ const ApplicationWizard = ({ applicantId, application, defaults, onCancel, onSub
             />
             Certifico que todas mis respuestas son correctas y me comprometo a cumplir las reglas del instituto.
           </label>
+          <SignaturePad
+            label="Tu firma"
+            onChange={(signature) => setField('applicantSignature', signature)}
+            signerName={values.name}
+            value={values.applicantSignature ?? null}
+          />
+          <div className="application-pastor">
+            <div className="application-pastor-header">
+              <div>
+                <h3 className="form-section-title">Firma del pastor</h3>
+                <p className="application-note">
+                  Opcional aquí: si tu pastor está contigo puede contestar y firmar en esta pantalla. Si no, firma en la
+                  oficina.
+                </p>
+              </div>
+              <button className="btn btn-secondary" onClick={() => setIsPastorOpen((isOpen) => !isOpen)} type="button">
+                {isPastorOpen ? 'Ocultar' : 'Mi pastor va a firmar'}
+              </button>
+            </div>
+            {isPastorOpen && (
+              <PastorSection
+                answers={values.pastorAnswers ?? []}
+                onAnswersChange={(answers) => setField('pastorAnswers', answers)}
+                onSignatureChange={(signature) => setField('pastorSignature', signature)}
+                pastorName={values.pastorName}
+                signature={values.pastorSignature ?? null}
+              />
+            )}
+          </div>
         </div>
       )}
       {error && <p className="form-alert">{error}</p>}

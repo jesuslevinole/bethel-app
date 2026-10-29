@@ -323,6 +323,29 @@
   justify-content: flex-end;
 }
 
+/* ---------- Firma del pastor (formulario y oficina) ---------- */
+.application-pastor {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.application-pastor-header {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.pastor-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 /* ---------- Revisión de la oficina ---------- */
 .application-review {
   align-items: start;
@@ -330,6 +353,31 @@
   display: grid;
   gap: var(--space-5);
   grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.application-review-document {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.application-review-signatures {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.application-review-subtitle {
+  border-top: 1px solid var(--color-border);
+  color: var(--color-primary-strong);
+  font-size: var(--text-md);
+  margin: 0;
+  padding-top: var(--space-4);
 }
 
 .application-review-office {
@@ -441,13 +489,35 @@
 }
 
 .application-document-signature {
+  align-items: end;
   display: grid;
   gap: var(--space-6);
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  margin-top: var(--space-5);
+  margin-top: var(--space-4);
 }
 
-.application-document-signature span {
+.application-document-sign {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 72px;
+}
+
+.application-document-sign img {
+  margin-bottom: -6px;
+  max-height: 64px;
+  max-width: 260px;
+}
+
+.application-document-sign-date {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.application-document-sign-label {
+  align-self: stretch;
   border-top: 1px solid var(--color-ink);
   color: var(--color-ink-muted);
   font-size: var(--text-xs);
@@ -540,7 +610,8 @@
     display: block;
   }
 
-  .application-review-office {
+  .application-review-office,
+  .application-review-signatures {
     display: none;
   }
 

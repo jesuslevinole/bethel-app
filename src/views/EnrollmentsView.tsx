@@ -59,7 +59,7 @@ const EnrollmentsView = () => {
         {canCreate && (
           <button className="btn btn-primary" disabled={!selectedPeriod} onClick={openNew} type="button">
             <Plus size={18} />
-            Inscribir alumno
+            Inscripciones
           </button>
         )}
       </ViewHeader>

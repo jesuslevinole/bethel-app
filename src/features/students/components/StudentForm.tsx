@@ -42,7 +42,7 @@ const StudentForm = ({ onClose, onSaved, student, students }: StudentFormProps) 
     if (await run(saveStudent)) onSaved(savedId);
   };
 
-  const title = student ? 'Editar alumno' : 'Registrar alumno';
+  const title = student ? 'Editar alumno' : 'Registro';
   const subtitle = student ? 'Datos personales y de su iglesia.' : 'Después de guardar se abre su ficha para subir la foto.';
 
   return (

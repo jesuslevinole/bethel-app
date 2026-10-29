@@ -1,3 +1,6 @@
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { db } from '../../../config/firebase';
+import { COLLECTIONS } from '../../../lib/firebase/collections';
 import { admissionApplicationsService } from '../../../services/admissionApplicationsService';
 import { appUsersService } from '../../../services/appUsersService';
 import { studentsService } from '../../../services/studentsService';
@@ -15,10 +18,20 @@ export const submitApplication = async (applicantId: string, values: Application
     name: values.name.trim(),
     status: 'pending',
   };
-  await admissionApplicationsService.set(applicantId, data);
+  // merge: si la oficina ya anotó o firmó algo, el estudiante al corregir no lo borra.
+  await setDoc(
+    doc(db, COLLECTIONS.admissionApplications, applicantId),
+    { ...data, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
 };
 
+// Lo que llena la oficina: recibido, gastos, nota, las firmas de la secretaria y del pastor (si firma en la oficina)
+// y las respuestas del pastor.
 export interface OfficeReview {
+  officeSignature: AdmissionApplication['officeSignature'];
+  pastorAnswers: NonNullable<AdmissionApplication['pastorAnswers']>;
+  pastorSignature: AdmissionApplication['pastorSignature'];
   receivedDate: string;
   receivedFees: NonNullable<AdmissionApplication['receivedFees']>;
   reviewNote: string;

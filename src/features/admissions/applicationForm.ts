@@ -1,5 +1,6 @@
 import type {
   AdmissionApplication,
+  Signature,
   ApplicationStatus,
   BirthGender,
   MaritalStatus,
@@ -12,8 +13,24 @@ import { isIsoDate, todayIso } from '../../utils/dateFormat';
 // Lo que llena el estudiante (sin los campos de la oficina).
 export type ApplicationFormValues = Omit<
   AdmissionApplication,
-  'date' | 'id' | 'receivedDate' | 'receivedFees' | 'reviewNote' | 'status' | 'studentId'
+  'date' | 'id' | 'officeSignature' | 'receivedDate' | 'receivedFees' | 'reviewNote' | 'status' | 'studentId'
 >;
+
+// Preguntas del formulario "Para el uso del pastor del solicitante solamente", en orden.
+export const PASTOR_QUESTIONS = [
+  '¿Sabe usted algún motivo por el cual el solicitante no debe ser admitido(a) al Instituto?',
+  '¿Tiene el solicitante más de dos (2) meses de convertido?',
+  '¿Respalda el testimonio del estudiante?',
+  '¿Notificará usted cuando el solicitante demuestre cambio espiritual?',
+  '¿Se hará responsable la Iglesia de cumplir con la deuda del estudiante?',
+];
+
+export const EMPTY_PASTOR_ANSWERS: YesNo[] = PASTOR_QUESTIONS.map(() => '');
+
+export const PASTOR_CERTIFICATION =
+  'Yo certifico en lo mejor de mi conocimiento que todas mis respuestas en esta aplicación son correctas. Yo me comprometeré a cumplir con las reglas y regulaciones del Distrito Hispano del Este y del Instituto Bíblico de las Asambleas de Dios.';
+
+export const isSigned = (signature: Signature | null | undefined): signature is Signature => Boolean(signature?.image);
 
 const EMPTY_ADDRESS: PostalAddress = { city: '', state: '', street: '', zip: '' };
 const EMPTY_INSTITUTE: PreviousInstitute = {
@@ -29,6 +46,7 @@ export const toApplicationFormValues = (
   defaults: { email: string; name: string },
 ): ApplicationFormValues => ({
   address: application?.address ?? EMPTY_ADDRESS,
+  applicantSignature: application?.applicantSignature ?? null,
   birthDate: application?.birthDate ?? '',
   birthGender: application?.birthGender ?? '',
   birthPlace: application?.birthPlace ?? '',
@@ -45,7 +63,9 @@ export const toApplicationFormValues = (
   maritalStatus: application?.maritalStatus ?? '',
   name: application?.name ?? defaults.name,
   otherInstitute: application?.otherInstitute ?? EMPTY_INSTITUTE,
+  pastorAnswers: application?.pastorAnswers ?? EMPTY_PASTOR_ANSWERS,
   pastorName: application?.pastorName ?? '',
+  pastorSignature: application?.pastorSignature ?? null,
   pastorPhone: application?.pastorPhone ?? '',
   phone: application?.phone ?? '',
   primarySchool: application?.primarySchool ?? { highestGrade: '', name: '' },
@@ -119,6 +139,7 @@ export const validateApplicationStep = (step: ApplicationStepKey, values: Applic
     return null;
   }
   if (!values.certified) return 'Marca la casilla para certificar que tus respuestas son correctas.';
+  if (!isSigned(values.applicantSignature)) return 'Firma tu solicitud en el recuadro de la firma.';
   return null;
 };
 
